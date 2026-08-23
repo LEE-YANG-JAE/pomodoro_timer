@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "_comment": "npm 의존성이 아니라 `node --check` 가 ES 모듈로 파싱하게 하는 표시일 뿐이다."
+}

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pomodoro",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["launcher.py", "--no-browser"],
+      "port": 8025,
+      "autoPort": false
+    }
+  ]
+}

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>뽀모도로 타이머</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='26' fill='none' stroke='%23e05252' stroke-width='9'/></svg>">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/boot.js"></script>
+</head>
+<body data-status="idle" data-phase="focus">
+
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+<header class="topbar">
+  <h1 class="brand visually-hidden">뽀모도로 타이머</h1>
+  <nav class="tabs" role="tablist" aria-label="화면 전환">
+    <button class="tab" role="tab" data-view-tab="timer" aria-selected="true">타이머</button>
+    <button class="tab" role="tab" data-view-tab="records" aria-selected="false">기록</button>
+    <button class="tab" role="tab" data-view-tab="music" aria-selected="false">음악</button>
+    <button class="tab" role="tab" data-view-tab="settings" aria-selected="false">설정</button>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ── 타이머 ─────────────────────────────────────────────────────────── -->
+  <section class="panel panel-timer" data-view-panel="timer" role="tabpanel" aria-label="타이머">
+    <p id="phase-label" class="phase-label">집중</p>
+
+    <div class="ring-wrap">
+      <svg class="ring" viewBox="0 0 300 300" aria-hidden="true">
+        <circle class="ring-track" cx="150" cy="150" r="130" fill="none" stroke-width="14"/>
+        <circle id="ring-progress" class="ring-progress" cx="150" cy="150" r="130"
+                fill="none" stroke-width="14" stroke-linecap="round"
+                transform="rotate(-90 150 150)"/>
+      </svg>
+      <!-- ★ aria-live 를 붙이지 않는다. 매초 읽히면 스크린리더가 쓸모없어진다.
+           대신 aria-label 을 15초마다 갱신하고, 의미 있는 안내는 #timer-sr 로 내보낸다. -->
+      <div id="countdown" class="countdown" tabindex="0" role="timer"
+           aria-label="집중 25분 0초 남음">25:00</div>
+      <!-- 활성 작업. 없으면 hidden — 작업 없이 집중하는 것도 정상 상태다. -->
+      <p id="active-task" class="active-task" hidden></p>
+    </div>
+
+    <p id="cycle-dots" class="cycle-dots" aria-label="세트 진행 상황"></p>
+
+    <!-- 방해 기록 — 집중이 돌고 있을 때만 보인다. 한 키에 한 번, 대화상자 없음. -->
+    <div id="interrupt-bar" class="interrupt-bar" hidden>
+      <button id="btn-int-internal" class="tick-btn" type="button"
+              aria-label="내부 방해 기록 (I)">＋ 내부</button>
+      <button id="btn-int-external" class="tick-btn" type="button"
+              aria-label="외부 방해 기록 (Shift+I)">＋ 외부</button>
+      <span id="interruption-ticks" class="ticks"></span>
+    </div>
+
+    <!-- 휴식 시작 유예 — 자동 시작이 켜져 있어도 잠깐 붙잡는다 (휴식 침식 방지) -->
+    <div id="hold-bar" class="hold-bar" role="status" hidden>
+      <span id="hold-label"></span>
+      <button id="btn-hold-now" class="btn btn-small btn-primary" type="button">지금 시작</button>
+    </div>
+
+    <div class="controls">
+      <button id="btn-reset" class="btn btn-ghost" type="button" aria-label="현재 구간 처음으로 (R)">초기화</button>
+      <button id="btn-primary" class="btn btn-primary btn-lg" type="button" aria-label="시작">시작</button>
+      <button id="btn-skip" class="btn btn-ghost" type="button" aria-label="건너뛰기 (S)">건너뛰기</button>
+    </div>
+    <button id="btn-extend" class="btn btn-ghost btn-small" type="button"
+            aria-label="5분 연장 (E)" hidden>+5분 더</button>
+
+    <!-- 첫 실행 안내 — 음원이 없을 때만. 마법사가 아니라 인라인 한 줄. -->
+    <p id="first-run" class="first-run muted" hidden>
+      <span>음악이 아직 없습니다.</span>
+      <button id="btn-first-download" class="btn btn-small" type="button">기본 음원 내려받기</button>
+      <button id="btn-first-noise" class="btn btn-small btn-ghost" type="button">백색 소음으로 시작</button>
+    </p>
+
+    <!-- ── 오늘 할 일 ─────────────────────────────────────────────────────
+         ★ .controls **아래**에 둔다. 할 일 목록을 시작 버튼 위에 끼우면
+         작업 입력이 전제 조건처럼 느껴지고, 그게 메타 미루기의 발동 조건이다. -->
+    <section id="task-panel" class="task-panel" aria-labelledby="task-panel-title">
+      <div class="task-head">
+        <h2 id="task-panel-title" class="section-title">오늘 할 일</h2>
+        <span id="task-projection" class="task-projection"></span>
+      </div>
+
+      <ol id="task-list" class="task-list"></ol>
+
+      <form id="task-add" class="task-add" autocomplete="off">
+        <input id="task-name" class="task-name-input" type="text" maxlength="120"
+               placeholder="할 일 추가 (선택)" aria-label="할 일 이름">
+        <input id="task-est" class="task-est-input" type="number" min="1" max="40"
+               step="1" value="1" aria-label="예상 뽀모도로 개수">
+        <button class="btn btn-small" type="submit">추가</button>
+      </form>
+
+      <p id="task-empty" class="muted task-empty">
+        할 일을 적지 않아도 됩니다. 그냥 <strong>시작</strong>을 누르세요.
+      </p>
+      <button id="btn-clear-done" class="btn btn-small btn-ghost" type="button">완료 항목 정리</button>
+    </section>
+
+    <div class="player">
+      <button id="btn-prev-track" class="icon-btn" type="button" aria-label="이전 곡">⏮</button>
+      <button id="btn-music-toggle" class="icon-btn" type="button" aria-pressed="false"
+              aria-label="음악 일시정지 (P)">⏸</button>
+      <button id="btn-next-track" class="icon-btn" type="button" aria-label="다음 곡 (N)">⏭</button>
+      <button id="btn-shuffle" class="icon-btn" type="button" aria-pressed="false"
+              aria-label="재생 순서 바꾸기 (O)" title="순서대로 / 무작위">🔁</button>
+      <span id="now-playing" class="now-playing">재생 중인 곡 없음</span>
+      <button id="btn-mute" class="icon-btn" type="button" aria-pressed="false" aria-label="음소거 (M)">🔊</button>
+      <input id="music-volume" class="volume" type="range" min="0" max="100" step="1"
+             aria-label="음악 음량">
+    </div>
+
+    <div class="noise-bar">
+      <button id="btn-noise" class="btn btn-small" type="button" aria-pressed="false"
+              aria-label="백색 소음 켜기/끄기 (W)">🌊 백색 소음</button>
+      <!-- 켜져 있을 때만 보인다 — 꺼진 상태에서 종류·음량까지 늘어놓으면 화면만 복잡해진다 -->
+      <span class="noise-detail">
+        <select id="noise-type-quick" aria-label="소음 종류"></select>
+        <input id="noise-volume" class="volume" type="range" min="0" max="100" step="1"
+               aria-label="소음 음량">
+      </span>
+    </div>
+
+    <button id="btn-focus-mode" class="btn btn-ghost btn-small" type="button" aria-pressed="false">
+      집중 모드 (F)
+    </button>
+  </section>
+
+  <!-- ── 기록 ───────────────────────────────────────────────────────────── -->
+  <section class="panel" data-view-panel="records" role="tabpanel" aria-label="기록" hidden>
+    <div id="stats-stale" class="notice" hidden>서버에 연결할 수 없어 마지막으로 받은 기록을 보여줍니다.</div>
+    <div id="queue-badge" class="notice notice-quiet" hidden>
+      <span id="queue-badge-label"></span>
+      <button id="queue-retry" class="btn btn-small" type="button">지금 다시 저장</button>
+    </div>
+
+    <div class="tiles">
+      <div class="tile">
+        <span class="tile-label">오늘 완료</span>
+        <strong id="stat-count" class="tile-value">0</strong>
+      </div>
+      <div class="tile">
+        <span class="tile-label">총 집중 시간</span>
+        <strong id="stat-focus" class="tile-value">0분</strong>
+      </div>
+      <div class="tile">
+        <span class="tile-label">오늘 목표</span>
+        <strong id="stat-goal-tile" class="tile-value">0 / 4</strong>
+        <span id="stat-aborted" class="tile-note" hidden></span>
+      </div>
+    </div>
+    <!-- ★ 연속 달성은 큰 타일에서 작은 부제로 내렸다. 손실 회피 프레이밍(스트릭)은
+         60일 이상 끊긴 사용자의 약 40%가 2주 내 이탈하는 요인으로 문서화돼 있다.
+         빨간색이나 끊긴 사슬 아이콘은 쓰지 않는다. -->
+    <p class="streak-line">
+      <span id="stat-streak" class="streak-value">0일</span>
+      <span id="stat-streak-note" class="muted"></span>
+    </p>
+
+    <div class="goal">
+      <div class="goal-bar"><div id="goal-bar-fill" class="goal-bar-fill"></div></div>
+    </div>
+
+    <h2 class="section-title">오늘의 세션</h2>
+    <ol id="session-list" class="session-list"></ol>
+    <p id="session-empty" class="muted" hidden>오늘 기록한 세션이 없습니다.</p>
+
+    <h2 class="section-title">작업별</h2>
+    <div class="filters" role="group" aria-label="기간">
+      <button class="btn btn-small" type="button" data-rollup="1" aria-pressed="true">오늘</button>
+      <button class="btn btn-small" type="button" data-rollup="7" aria-pressed="false">이번 주</button>
+    </div>
+    <table class="history">
+      <thead><tr><th scope="col">작업</th><th scope="col" class="num">뽀모도로</th>
+                 <th scope="col" class="num">집중 시간</th></tr></thead>
+      <tbody id="task-rollup-body"></tbody>
+    </table>
+    <p id="weekly-insight" class="insight muted"></p>
+
+    <h2 class="section-title">최근 7일</h2>
+    <svg id="week-chart" class="week-chart" viewBox="0 0 320 132" aria-hidden="true"></svg>
+    <p id="week-chart-desc" class="visually-hidden"></p>
+
+    <h2 class="section-title">지난 기록</h2>
+    <table class="history">
+      <thead><tr><th scope="col">날짜</th><th scope="col" class="num">완료</th><th scope="col" class="num">집중 시간</th></tr></thead>
+      <tbody id="history-body"></tbody>
+    </table>
+
+    <div class="row-actions">
+      <!-- ★ 스트리밍 GET 이라 순수 <a download> 로 충분하다. blob 도 JS 도 필요 없다. -->
+      <a id="btn-export-csv" class="btn btn-small" href="/api/stats/export.csv" download>CSV 내려받기</a>
+    </div>
+  </section>
+
+  <!-- ── 음악 ───────────────────────────────────────────────────────────── -->
+  <section class="panel" data-view-panel="music" role="tabpanel" aria-label="음악" hidden>
+    <h2 class="section-title">음원 찾기</h2>
+    <p class="muted">archive.org 에서 퍼블릭 도메인·CC 라이선스 음원을 찾아 바로 추가합니다.</p>
+
+    <div class="search-box">
+      <label class="visually-hidden" for="ia-q">archive.org 음원 검색</label>
+      <input id="ia-q" class="search-input" type="search" autocomplete="off"
+             enterkeyhint="search" maxlength="80"
+             placeholder="작곡가나 곡명 (예: 쇼팽 야상곡)" aria-describedby="ia-notice">
+      <button id="btn-ia-search" class="btn" type="button">검색</button>
+    </div>
+    <div id="ia-chips" class="filters" role="group" aria-label="추천 검색"></div>
+    <p id="ia-notice" class="muted" role="status" aria-live="polite"></p>
+    <div id="ia-results" class="track-list"></div>
+
+    <h2 class="section-title">내 음원</h2>
+    <div id="download-status" class="notice" hidden>
+      <span id="download-label"></span>
+      <div class="goal-bar"><div id="download-fill" class="goal-bar-fill"></div></div>
+      <button id="btn-cancel-download" class="btn btn-small" type="button" hidden>중단</button>
+    </div>
+
+    <div class="row-actions">
+      <button id="btn-download-core" class="btn" type="button">기본 음원 내려받기</button>
+      <button id="btn-download-all" class="btn" type="button">전체 내려받기</button>
+      <button id="btn-upload" class="btn" type="button">파일 추가</button>
+      <button id="btn-import-folder" class="btn" type="button">폴더에서 가져오기</button>
+      <input id="file-input" type="file" accept="audio/*,.mp3,.m4a,.flac,.wav,.ogg" multiple hidden>
+    </div>
+    <p id="upload-status" class="muted"></p>
+    <p id="track-summary" class="muted"></p>
+
+    <div class="filters" role="group" aria-label="목록 필터">
+      <button class="btn btn-small" type="button" data-filter="all" aria-pressed="true">전체</button>
+      <button class="btn btn-small" type="button" data-filter="focus" aria-pressed="false">집중</button>
+      <button class="btn btn-small" type="button" data-filter="break" aria-pressed="false">휴식</button>
+    </div>
+
+    <div id="track-list" class="track-list"></div>
+
+    <h2 class="section-title">음원 출처 및 라이선스</h2>
+    <p class="muted">
+      확장 세트에는 CC BY-SA 음원이 포함되어 있어 저작자 표시가 필요합니다.
+      파일은 받은 그대로 저장·재생하며 재인코딩하지 않습니다.
+    </p>
+    <div id="credits-list" class="credits"></div>
+  </section>
+
+  <!-- ── 설정 ───────────────────────────────────────────────────────────── -->
+  <section class="panel" data-view-panel="settings" role="tabpanel" aria-label="설정" hidden>
+    <h2 class="section-title">사이클 세트</h2>
+    <p class="muted">
+      한 세트는 <strong>집중 한 번 + 뒤따르는 휴식 한 번</strong>입니다. 순서대로 진행합니다.
+    </p>
+    <div id="set-list" class="set-list"></div>
+    <div class="row-actions">
+      <button id="btn-add-set" class="btn btn-small" type="button">+ 세트 추가</button>
+      <span id="set-summary" class="muted"></span>
+    </div>
+    <div class="fields">
+      <label class="field field-check"><input id="set-repeat" type="checkbox">
+        <span>마지막 세트가 끝나면 처음부터 반복</span></label>
+      <label class="field"><span>자동 시작</span>
+        <select id="set-autostart">
+          <option value="break">휴식만 자동 시작</option>
+          <option value="all">모두 자동 시작</option>
+          <option value="none">직접 시작</option>
+        </select>
+      </label>
+    </div>
+
+    <h2 class="section-title">소리</h2>
+    <div class="fields">
+      <label class="field field-check"><input id="set-silent" type="checkbox">
+        <span>무음 모드 — 음악 없이 타이머와 알림음만</span>
+        <small class="field-hint">
+          배경음악의 효과는 사람마다 다르고, 독해 위주 작업에서는 오히려 방해가 된다는 연구가 있습니다.
+        </small>
+      </label>
+      <label class="field"><span>알림음</span>
+        <select id="set-chime-variant"></select>
+        <small class="field-hint">구간이 끝날 때 울립니다. 음악·소음은 잠시 작아집니다.</small>
+      </label>
+      <label class="field"><span>알림음 음량</span>
+        <input id="set-chime-vol" type="range" min="0" max="100" step="1"></label>
+      <button id="btn-preview-chime" class="btn btn-small" type="button">알림음 들어보기</button>
+      <label class="field"><span>백색 소음 재생 구간</span>
+        <select id="set-noise-phases">
+          <option value="focus">집중할 때만</option>
+          <option value="all">집중과 휴식 모두</option>
+        </select>
+        <small class="field-hint">
+          소음 켜기·종류·음량은 타이머 화면에서 바로 조절합니다.
+        </small>
+      </label>
+    </div>
+
+    <h2 class="section-title">기록</h2>
+    <div class="fields">
+      <label class="field"><span>하루 시작 시각</span>
+        <select id="set-day-start">
+          <option value="0">자정 (0시)</option>
+          <option value="3">새벽 3시</option>
+          <option value="4">새벽 4시</option>
+          <option value="5">새벽 5시</option>
+          <option value="6">아침 6시</option>
+        </select>
+        <small class="field-hint">
+          새벽까지 일한 세션을 전날로 묶고 싶을 때. 변경하면 기존 기록도 다시 계산됩니다.
+        </small>
+      </label>
+      <label class="field"><span>하루 목표 (개)</span>
+        <input id="set-goal" type="number" min="1" max="50" step="1"></label>
+    </div>
+
+    <h2 class="section-title">화면</h2>
+    <div class="fields">
+      <label class="field"><span>테마</span>
+        <select id="set-theme">
+          <option value="auto">시스템 설정 따르기</option>
+          <option value="light">밝게</option>
+          <option value="dark">어둡게</option>
+        </select></label>
+      <label class="field field-check"><input id="set-notifications" type="checkbox">
+        <span>구간이 바뀔 때 알림 표시</span>
+        <small class="field-hint">다른 탭에서 작업 중일 때 유용합니다.</small></label>
+    </div>
+
+    <details class="advanced">
+      <summary>고급 설정</summary>
+      <div class="fields">
+        <label class="field"><span>오래 끊겼을 때</span>
+          <select id="set-interruption">
+            <option value="ask">어떻게 할지 물어보기</option>
+            <option value="extend">끊긴 만큼 미뤄서 이어가기</option>
+            <option value="ignore">완료로 처리하기</option>
+          </select>
+          <small class="field-hint">절전 등으로 2분 넘게 멈췄을 때의 동작입니다.</small>
+        </label>
+        <label class="field"><span>곡 전환 페이드 (초)</span>
+          <input id="set-crossfade" type="number" min="0" max="10" step="1"></label>
+        <label class="field field-check"><input id="set-wakelock" type="checkbox">
+          <span>집중 중 화면이 꺼지지 않게 하기</span>
+          <small class="field-hint"></small></label>
+        <label class="field field-check"><input id="set-auto-focus-mode" type="checkbox">
+          <span>집중이 시작되면 자동으로 집중 모드</span></label>
+        <label class="field field-check"><input id="set-favicon" type="checkbox">
+          <span>탭 아이콘에 진행률 표시</span></label>
+      </div>
+
+      <div class="row-actions">
+        <button id="btn-help" class="btn btn-small" type="button">키보드 단축키 보기</button>
+        <button id="btn-reset-settings" class="btn btn-small" type="button">설정 초기화</button>
+        <button id="btn-reset-stats" class="btn btn-small btn-danger" type="button">기록 전체 삭제</button>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<button id="btn-exit-focus" class="exit-focus" type="button">집중 모드 끄기 (Esc)</button>
+
+<!-- 스크린리더 전용 안내. 카운트다운이 아니라 이 요소만 aria-live 를 갖는다. -->
+<p id="timer-sr" class="visually-hidden" aria-live="polite" aria-atomic="true"></p>
+
+<div id="modal-backdrop" hidden></div>
+<div id="toast-stack" class="toast-stack"></div>
+
+<script type="module" src="/static/main.js"></script>
+</body>
+</html>

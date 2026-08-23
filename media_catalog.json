@@ -1,0 +1,1575 @@
+{
+  "version": 1,
+  "generated_at": null,
+  "generator": "qa/build_catalog.py",
+  "sources": [
+    {
+      "source_id": "ia:wtc1",
+      "provider": "archive.org",
+      "identifier": "bach-well-tempered-clavier-book-1",
+      "album_orig": "Bach: Well​-​Tempered Clavier, Book 1",
+      "album_ko": "바흐 — 평균율 클라비어 곡집 1권",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/",
+      "license_url": "http://creativecommons.org/publicdomain/mark/1.0/",
+      "attribution_ko": "키미코 이시자카 (피아노) — 바흐 — 평균율 클라비어 곡집 1권",
+      "details_url": "https://archive.org/details/bach-well-tempered-clavier-book-1"
+    },
+    {
+      "source_id": "ia:goldberg",
+      "provider": "archive.org",
+      "identifier": "The_Open_Goldberg_Variations-11823",
+      "album_orig": "The Open Goldberg Variations",
+      "album_ko": "바흐 — 골드베르크 변주곡",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution_ko": "키미코 이시자카 (피아노) — 바흐 — 골드베르크 변주곡",
+      "details_url": "https://archive.org/details/The_Open_Goldberg_Variations-11823"
+    },
+    {
+      "source_id": "ia:chopin",
+      "provider": "archive.org",
+      "identifier": "musopen-chopin",
+      "album_orig": "Musopen - The Complete Chopin Collection",
+      "album_ko": "쇼팽 — 야상곡·전주곡 모음",
+      "performer_ko": "Musopen",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution_ko": "Musopen — 쇼팽 — 야상곡·전주곡 모음",
+      "details_url": "https://archive.org/details/musopen-chopin"
+    },
+    {
+      "source_id": "ia:artoffugue",
+      "provider": "archive.org",
+      "identifier": "pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080",
+      "album_orig": "Kimiko Ishizaka - J.S. Bach: The Art of the Fugue (Kunst der Fuge), BWV 1080",
+      "album_ko": "바흐 — 푸가의 기법 BWV 1080",
+      "performer_ko": "PandaCD",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution_ko": "PandaCD — 바흐 — 푸가의 기법 BWV 1080",
+      "details_url": "https://archive.org/details/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080"
+    },
+    {
+      "source_id": "commons:usaf-band",
+      "provider": "wikimedia-commons",
+      "identifier": "Audio files of music by the United States Air Force Band",
+      "album_orig": "Audio files of music by the United States Air Force Band",
+      "album_ko": "미 공군 군악대 연주 모음",
+      "performer_ko": "United States Air Force Band",
+      "license": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+      "attribution_ko": "United States Air Force Band",
+      "details_url": "https://commons.wikimedia.org/wiki/Category:Audio%20files%20of%20music%20by%20the%20United%20States%20Air%20Force%20Band"
+    },
+    {
+      "source_id": "commons:usmc-band",
+      "provider": "wikimedia-commons",
+      "identifier": "Audio files of classical music by the United States Marine Band",
+      "album_orig": "Audio files of classical music by the United States Marine Band",
+      "album_ko": "미 해병대 군악대 연주 모음",
+      "performer_ko": "United States Marine Band",
+      "license": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+      "attribution_ko": "United States Marine Band",
+      "details_url": "https://commons.wikimedia.org/wiki/Category:Audio%20files%20of%20classical%20music%20by%20the%20United%20States%20Marine%20Band"
+    },
+    {
+      "source_id": "commons:usn-band",
+      "provider": "wikimedia-commons",
+      "identifier": "Audio files of music by the United States Navy Band",
+      "album_orig": "Audio files of music by the United States Navy Band",
+      "album_ko": "미 해군 군악대 연주 모음",
+      "performer_ko": "United States Navy Band",
+      "license": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+      "attribution_ko": "United States Navy Band",
+      "details_url": "https://commons.wikimedia.org/wiki/Category:Audio%20files%20of%20music%20by%20the%20United%20States%20Navy%20Band"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "wtc1-01",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 1 in C major, BWV 846",
+      "title_ko": "전주곡 No. 1 C장조, BWV 846",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 162,
+      "filename": "wtc1-01.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2001%20Prelude%20No.%201%20in%20C%20major%2C%20BWV%20846.mp3",
+      "bytes": 2720314,
+      "sha1": "cbe63f925bddf7055b24316cc425096d45d528c8",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-02",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 2 in C minor, BWV 847",
+      "title_ko": "전주곡 No. 2 C단조, BWV 847",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 107,
+      "filename": "wtc1-02.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2003%20Prelude%20No.%202%20in%20C%20minor%2C%20BWV%20847.mp3",
+      "bytes": 2281035,
+      "sha1": "b9290647db5677dad139c80b557919378fc8fd68",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-03",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 3 in C-sharp major, BWV 848",
+      "title_ko": "전주곡 No. 3 in C-sharp major, BWV 848",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 75,
+      "filename": "wtc1-03.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2005%20Prelude%20No.%203%20in%20C-sharp%20major%2C%20BWV%20848.mp3",
+      "bytes": 1576945,
+      "sha1": "b6e1c178ec03a33f0c43e349b3c98d27779b5793",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-04",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 4 in C-sharp minor, BWV 849",
+      "title_ko": "전주곡 No. 4 in C-sharp minor, BWV 849",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 178,
+      "filename": "wtc1-04.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2007%20Prelude%20No.%204%20in%20C-sharp%20minor%2C%20BWV%20849.mp3",
+      "bytes": 3313689,
+      "sha1": "a67cae90976cc550cd0f2f911d549c5b04748703",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-05",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 5 in D major, BWV 850",
+      "title_ko": "전주곡 No. 5 D장조, BWV 850",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 92,
+      "filename": "wtc1-05.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2009%20Prelude%20No.%205%20in%20D%20major%2C%20BWV%20850.mp3",
+      "bytes": 1884542,
+      "sha1": "5ac52f50b208e7410286c9f190379f60b6514ada",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-06",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 6 in D minor, BWV 851",
+      "title_ko": "전주곡 No. 6 D단조, BWV 851",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 98,
+      "filename": "wtc1-06.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2011%20Prelude%20No.%206%20in%20D%20minor%2C%20BWV%20851.mp3",
+      "bytes": 1994477,
+      "sha1": "41a36c57bc5293c0804a6e01cd35a93e137f66e3",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-07",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 7 in E-flat major, BWV 852",
+      "title_ko": "전주곡 No. 7 in E-flat major, BWV 852",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 213,
+      "filename": "wtc1-07.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2013%20Prelude%20No.%207%20in%20E-flat%20major%2C%20BWV%20852.mp3",
+      "bytes": 4203105,
+      "sha1": "949beff7cd0bac372a00d4d7b73f8407bef410ba",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-08",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 8 in E-flat minor, BWV 853",
+      "title_ko": "전주곡 No. 8 in E-flat minor, BWV 853",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 238,
+      "filename": "wtc1-08.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2015%20Prelude%20No.%208%20in%20E-flat%20minor%2C%20BWV%20853.mp3",
+      "bytes": 4170961,
+      "sha1": "cd3c652a84a5e68e7c23312b0ad5c9d2091128c1",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-09",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 9 in E major, BWV 854",
+      "title_ko": "전주곡 No. 9 E장조, BWV 854",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 104,
+      "filename": "wtc1-09.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2017%20Prelude%20No.%209%20in%20E%20major%2C%20BWV%20854.mp3",
+      "bytes": 1934897,
+      "sha1": "6d8d2fcc53605bd7577a98cad7828b3c58bf86d6",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-10",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 10 in E minor, BWV 855",
+      "title_ko": "전주곡 No. 10 E단조, BWV 855",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 120,
+      "filename": "wtc1-10.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2019%20Prelude%20No.%2010%20in%20E%20minor%2C%20BWV%20855.mp3",
+      "bytes": 2409037,
+      "sha1": "907015b8f002ce9ad05343d45b0fec7da6cf5d48",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-11",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 11 in F major, BWV 856",
+      "title_ko": "전주곡 No. 11 F장조, BWV 856",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 64,
+      "filename": "wtc1-11.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2021%20Prelude%20No.%2011%20in%20F%20major%2C%20BWV%20856.mp3",
+      "bytes": 1433661,
+      "sha1": "306655a766d3a25d2cd71ff225dd2226894fa59f",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "wtc1-12",
+      "source_id": "ia:wtc1",
+      "title_orig": "Prelude No. 12 in F minor, BWV 857",
+      "title_ko": "전주곡 No. 12 F단조, BWV 857",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 173,
+      "filename": "wtc1-12.mp3",
+      "url": "https://archive.org/download/bach-well-tempered-clavier-book-1/Kimiko%20Ishizaka%20-%20Bach-%20Well-Tempered%20Clavier%2C%20Book%201%20-%2023%20Prelude%20No.%2012%20in%20F%20minor%2C%20BWV%20857.mp3",
+      "bytes": 3138354,
+      "sha1": "07212578d6370a02564e943ef514fa1870660902",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "gv-01",
+      "source_id": "ia:goldberg",
+      "title_orig": "Aria",
+      "title_ko": "아리아",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 299,
+      "filename": "gv-01.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_01_-_Aria.mp3",
+      "bytes": 7847216,
+      "sha1": "a011d054607516f1e2f9fb2e61346486e013f663",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "gv-02",
+      "source_id": "ia:goldberg",
+      "title_orig": "Variatio 1 a 1 Clav",
+      "title_ko": "Variatio 1 a 1 Clav",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 115,
+      "filename": "gv-02.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_02_-_Variatio_1_a_1_Clav.mp3",
+      "bytes": 3329885,
+      "sha1": "e82af8a92f66f97e0c7a287133d8b2a8727e363f",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "gv-03",
+      "source_id": "ia:goldberg",
+      "title_orig": "Variatio 2 a 1 Clav",
+      "title_ko": "Variatio 2 a 1 Clav",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 123,
+      "filename": "gv-03.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_03_-_Variatio_2_a_1_Clav.mp3",
+      "bytes": 3258919,
+      "sha1": "ab16eb83dfb171694d613ff97a4674f8c8fdad9b",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "gv-04",
+      "source_id": "ia:goldberg",
+      "title_orig": "Variatio 3 a 1 Clav Canone allUnisuono",
+      "title_ko": "Variatio 3 a 1 Clav Canone allUnisuono",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 116,
+      "filename": "gv-04.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_04_-_Variatio_3_a_1_Clav_Canone_allUnisuono.mp3",
+      "bytes": 3189483,
+      "sha1": "480a1a84be735061cb9a4b13d408988e61748705",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "gv-05",
+      "source_id": "ia:goldberg",
+      "title_orig": "Variatio 4 a 1 Clav",
+      "title_ko": "Variatio 4 a 1 Clav",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 68,
+      "filename": "gv-05.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_05_-_Variatio_4_a_1_Clav.mp3",
+      "bytes": 1925171,
+      "sha1": "803b27d12b923d3c4648460a1892177b639a4911",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "gv-06",
+      "source_id": "ia:goldberg",
+      "title_orig": "Variatio 5 a 1 ovvero 2 Clav",
+      "title_ko": "Variatio 5 a 1 ovvero 2 Clav",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 94,
+      "filename": "gv-06.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_06_-_Variatio_5_a_1_ovvero_2_Clav.mp3",
+      "bytes": 2667831,
+      "sha1": "80b317e5fe978d863d05b6d5e390622d1f017626",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "gv-07",
+      "source_id": "ia:goldberg",
+      "title_orig": "Variatio 6 a 1 Clav Canone alla Seconda",
+      "title_ko": "Variatio 6 a 1 Clav Canone alla Seconda",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 98,
+      "filename": "gv-07.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_07_-_Variatio_6_a_1_Clav_Canone_alla_Seconda.mp3",
+      "bytes": 2529144,
+      "sha1": "655fa15f5c67275d52871573f6131228e204deab",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "gv-08",
+      "source_id": "ia:goldberg",
+      "title_orig": "Variatio 7 a 1 ovvero 2 Clav",
+      "title_ko": "Variatio 7 a 1 ovvero 2 Clav",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "키미코 이시자카 (피아노)",
+      "duration_seconds": 132,
+      "filename": "gv-08.mp3",
+      "url": "https://archive.org/download/The_Open_Goldberg_Variations-11823/Kimiko_Ishizaka_-_08_-_Variatio_7_a_1_ovvero_2_Clav.mp3",
+      "bytes": 3490627,
+      "sha1": "352be7f09ad707dac16e3a4412b020901825cea0",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "core",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-01",
+      "source_id": "ia:chopin",
+      "title_orig": "Allegro de Concert Op. 46 in A Major",
+      "title_ko": "알레그로 de Concert Op. 46 A장조",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 760,
+      "filename": "chp-01.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Allegro%20de%20Concert%20Op.%2046%20in%20A%20Major.mp3",
+      "bytes": 16282112,
+      "sha1": "8e430359f2f501772fee5736e7bbc2a7c084c70a",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-02",
+      "source_id": "ia:chopin",
+      "title_orig": "Op. 23",
+      "title_ko": "Op. 23",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 613,
+      "filename": "chp-02.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Ballade%20no.%201%20-%20Op.%2023.mp3",
+      "bytes": 12382720,
+      "sha1": "333796deeba785f7a31125fc1312cd7017fa1b6b",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-03",
+      "source_id": "ia:chopin",
+      "title_orig": "Op. 38",
+      "title_ko": "Op. 38",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 494,
+      "filename": "chp-03.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Ballade%20no.%202%20-%20Op.%2038.mp3",
+      "bytes": 10072576,
+      "sha1": "76bc7feffb34b4ab68154abfad74de16b3abda88",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-04",
+      "source_id": "ia:chopin",
+      "title_orig": "Op. 47",
+      "title_ko": "Op. 47",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 507,
+      "filename": "chp-04.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Ballade%20no.%203%20-%20Op.%2047.mp3",
+      "bytes": 10301440,
+      "sha1": "d35c695832a0fbe0f6756a73911d46ff1ae8032c",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-05",
+      "source_id": "ia:chopin",
+      "title_orig": "Op. 52",
+      "title_ko": "Op. 52",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 762,
+      "filename": "chp-05.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Ballade%20no.%204%20-%20Op.%2052.mp3",
+      "bytes": 15201280,
+      "sha1": "40c5d4d9ad8a6dbd04b3e31777ddc8621e85b32a",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-06",
+      "source_id": "ia:chopin",
+      "title_orig": "Canon in F minor",
+      "title_ko": "Canon F단조",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 43,
+      "filename": "chp-06.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Canon%20in%20F%20minor.mp3",
+      "bytes": 838144,
+      "sha1": "f209311ffbc45de5903999f270cd5248a23bfbe0",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-07",
+      "source_id": "ia:chopin",
+      "title_orig": "Fantasie Impromptu Op. 66",
+      "title_ko": "Fantasie Impromptu Op. 66",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 326,
+      "filename": "chp-07.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Fantasie%20Impromptu%20Op.%2066.mp3",
+      "bytes": 6707200,
+      "sha1": "36514230fe064b8e1d3ebd5feb96c07601018456",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-08",
+      "source_id": "ia:chopin",
+      "title_orig": "Fantasy Op. 49 in F minor",
+      "title_ko": "Fantasy Op. 49 F단조",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 738,
+      "filename": "chp-08.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Fantasy%20Op.%2049%20in%20F%20minor.mp3",
+      "bytes": 16772608,
+      "sha1": "d763b9c4c73bd441fede3bc0173f2cf92d5b6847",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-09",
+      "source_id": "ia:chopin",
+      "title_orig": "Fugue in A minor B. 144",
+      "title_ko": "푸가 A단조 B. 144",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 160,
+      "filename": "chp-09.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Fugue%20in%20A%20minor%20B.%20144.mp3",
+      "bytes": 3204608,
+      "sha1": "05a1ceaae925c6ea37833d58643b91d173bdc4af",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-10",
+      "source_id": "ia:chopin",
+      "title_orig": "Grande Valse Brilliante Op.18 In E flat major",
+      "title_ko": "Grande Valse Brilliante Op.18 E장조",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 319,
+      "filename": "chp-10.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Grande%20Valse%20Brilliante%20Op.18%20In%20E%20flat%20major.mp3",
+      "bytes": 6899712,
+      "sha1": "900805b7ad87f43d9b09b19ef4d3f2e5055169f3",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-11",
+      "source_id": "ia:chopin",
+      "title_orig": "Op. 29",
+      "title_ko": "Op. 29",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 280,
+      "filename": "chp-11.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Impromptu%20no.%201%20-%20Op.%2029.mp3",
+      "bytes": 5696000,
+      "sha1": "6bc41ca344e7c6261b53f2b2cd2b823d5dde34e4",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-12",
+      "source_id": "ia:chopin",
+      "title_orig": "Op. 36",
+      "title_ko": "Op. 36",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 367,
+      "filename": "chp-12.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Impromptu%20no.%202%20-%20Op.%2036.mp3",
+      "bytes": 7141888,
+      "sha1": "f21c51de7988f4fdd033c4189cfe17778aea5c14",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-13",
+      "source_id": "ia:chopin",
+      "title_orig": "Op. 51",
+      "title_ko": "Op. 51",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 388,
+      "filename": "chp-13.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Impromptu%20no.%203%20-%20Op.%2051.mp3",
+      "bytes": 7642624,
+      "sha1": "39dc6d95e21af1799a8914c759e9724f85cb0e61",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "chp-14",
+      "source_id": "ia:chopin",
+      "title_orig": "Mazurka Op. 17 no. 3 in A flat major",
+      "title_ko": "Mazurka Op. 17 no. 3 A장조",
+      "composer_ko": "프레데리크 쇼팽",
+      "performer_ko": "Musopen",
+      "duration_seconds": 246,
+      "filename": "chp-14.mp3",
+      "url": "https://archive.org/download/musopen-chopin/Mazurka%20Op.%2017%20no.%203%20in%20A%20flat%20major.mp3",
+      "bytes": 4726784,
+      "sha1": "8a4c33a7c2f63ed0962b68a58aca3a58bbd0064a",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-01",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 1",
+      "title_ko": "Contrapunctus 1",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 185,
+      "filename": "aof-01.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2001%20Contrapunctus%201.mp3",
+      "bytes": 3796555,
+      "sha1": "fccd215ef93f55ffc16a4fbf0a8c2ccb1865cce2",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-02",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 2",
+      "title_ko": "Contrapunctus 2",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 156,
+      "filename": "aof-02.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2002%20Contrapunctus%202.mp3",
+      "bytes": 3306754,
+      "sha1": "c2eca5e06c4c0050fb730e42dba7904c2456f6ec",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-03",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 3",
+      "title_ko": "Contrapunctus 3",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 157,
+      "filename": "aof-03.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2003%20Contrapunctus%203.mp3",
+      "bytes": 3270958,
+      "sha1": "235f812882dc2eb0fb6bedf07e5a74b27be77317",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-04",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 4",
+      "title_ko": "Contrapunctus 4",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 283,
+      "filename": "aof-04.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2004%20Contrapunctus%204.mp3",
+      "bytes": 5889526,
+      "sha1": "e84fb5d36cdf5cba4ebfcc44306943d848154711",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-05",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 5",
+      "title_ko": "Contrapunctus 5",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 204,
+      "filename": "aof-05.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2005%20Contrapunctus%205.mp3",
+      "bytes": 4263293,
+      "sha1": "1a13812e91168175299e47999676594ba4ceacba",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-06",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 6 a 4 in Stylo Francese",
+      "title_ko": "Contrapunctus 6 a 4 in Stylo Francese",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 347,
+      "filename": "aof-06.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2006%20Contrapunctus%206%20a%204%20in%20Stylo%20Francese.mp3",
+      "bytes": 7137162,
+      "sha1": "12cb5363a77538bf181f5c02c0ecb23eef7c79de",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-07",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 7 a 4 Per Augmentationem",
+      "title_ko": "Contrapunctus 7 a 4 Per Augmentationem",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 259,
+      "filename": "aof-07.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2007%20Contrapunctus%207%20a%204%20Per%20Augmentationem.mp3",
+      "bytes": 5447027,
+      "sha1": "75dd7d787f0df022da00d58e043ca173ebe5a178",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-08",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 8 a 3",
+      "title_ko": "Contrapunctus 8 a 3",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 247,
+      "filename": "aof-08.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2008%20Contrapunctus%208%20a%203.mp3",
+      "bytes": 5494670,
+      "sha1": "112f6872986ac74eaf8058fbeebc1e9beaeff5fd",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-09",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 9 a 4 Alla Duodecima",
+      "title_ko": "Contrapunctus 9 a 4 Alla Duodecima",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 156,
+      "filename": "aof-09.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2009%20Contrapunctus%209%20a%204%20Alla%20Duodecima.mp3",
+      "bytes": 3418628,
+      "sha1": "cb205cfab41e3f75790bcc5ac1d0e9359ffcef55",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "aof-10",
+      "source_id": "ia:artoffugue",
+      "title_orig": "Contrapunctus 10 a 4 Alla Decima",
+      "title_ko": "Contrapunctus 10 a 4 Alla Decima",
+      "composer_ko": "요한 제바스티안 바흐",
+      "performer_ko": "PandaCD",
+      "duration_seconds": 233,
+      "filename": "aof-10.mp3",
+      "url": "https://archive.org/download/pandacd-715-js-bach-the-art-of-the-fugue-kunst-der-fuge-bwv-1080/Kimiko%20Ishizaka%20-%20J.S.%20Bach-%20The%20Art%20of%20the%20Fugue%20%28Kunst%20der%20Fuge%29%2C%20BWV%201080%20-%2010%20Contrapunctus%2010%20a%204%20Alla%20Decima.mp3",
+      "bytes": 4991623,
+      "sha1": "cd73ecade9ec28aabf37d09d47005b2671839d76",
+      "sha256": null,
+      "playlists": [
+        "focus"
+      ],
+      "tier": "extra",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "usaf-01",
+      "source_id": "commons:usaf-band",
+      "title_orig": "Brindisi from La Traviata",
+      "title_ko": "Brindisi from La Traviata",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-01.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/%22Brindisi%22_from_La_Traviata_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3",
+      "bytes": 5995530,
+      "sha1": "c2e97d5a4accdf45f517325e3c33632ac5d8d755",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usaf-02",
+      "source_id": "commons:usaf-band",
+      "title_orig": "Soave Sia Il Vento from Cosi Fan Tutte",
+      "title_ko": "Soave Sia Il Vento from Cosi Fan Tutte",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-02.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/91/%22Soave_Sia_Il_Vento%22_from_Cosi_Fan_Tutte_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3",
+      "bytes": 6316232,
+      "sha1": "046283c4d6dd7845a56d851ed3353d94e76fe621",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usaf-03",
+      "source_id": "commons:usaf-band",
+      "title_orig": "Una Voce Poco Fa from Il Barbiere Di Siviglia",
+      "title_ko": "Una Voce Poco Fa from Il Barbiere Di Siviglia",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-03.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/2a/%22Una_Voce_Poco_Fa%22_from_Il_Barbiere_Di_Siviglia_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3",
+      "bytes": 6585056,
+      "sha1": "423caef12b1b8e46a9f5b5da1e7009fe48e96d61",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usaf-04",
+      "source_id": "commons:usaf-band",
+      "title_orig": "Vedi! Le Fosche from Il Trovatore",
+      "title_ko": "Vedi! Le Fosche from Il Trovatore",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-04.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/%22Vedi%21_Le_Fosche%22_from_Il_Trovatore_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3",
+      "bytes": 2702342,
+      "sha1": "533e37bea4ba0e94728df0c2c41ff5c45a8fee1c",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usaf-05",
+      "source_id": "commons:usaf-band",
+      "title_orig": "Votre Toast from Carmen",
+      "title_ko": "Votre Toast from Carmen",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-05.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4b/%22Votre_Toast%22_from_Carmen_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3",
+      "bytes": 5110361,
+      "sha1": "3ac9ee5a001331effbcdc4101bd53b7bd1ad26ef",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usaf-06",
+      "source_id": "commons:usaf-band",
+      "title_orig": "Twas in the Moon of Wintertime",
+      "title_ko": "Twas in the Moon of Wintertime",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-06.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/%27Twas_in_the_Moon_of_Wintertime_-_Men%27s_Chorus_-_United_States_Air_Force_Band.mp3",
+      "bytes": 9594777,
+      "sha1": "4d7c74facee63bbdb2c0e39fce5777b8cddcaccb",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usaf-07",
+      "source_id": "commons:usaf-band",
+      "title_orig": "The Airmen of Note-Christmas Time is Here-Good King Wenceslas and His Merry Band",
+      "title_ko": "The Airmen of Note-Christmas Time is Here-Good King Wenceslas and His Merry Band",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-07.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/01-The_Airmen_of_Note-Christmas_Time_is_Here-Good_King_Wenceslas_and_His_Merry_Band.mp3",
+      "bytes": 9957669,
+      "sha1": "f794d02c20a5d3918ef15637fb1e737b50853c46",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usaf-08",
+      "source_id": "commons:usaf-band",
+      "title_orig": "A Warrior Bold",
+      "title_ko": "A Warrior Bold",
+      "composer_ko": null,
+      "performer_ko": "United States Air Force Band",
+      "duration_seconds": null,
+      "filename": "usaf-08.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/40/A_Warrior_Bold_-_Concert_Band_-_United_States_Air_Force_Band.mp3",
+      "bytes": 6866212,
+      "sha1": "7eed10cde3f43a51eb9d2328d7ec8736433f0a49",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-01",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Grieg's Suite for Strings, Op. 40, From Holberg’s Time",
+      "title_ko": "그리그의 모음곡 for Strings, Op. 40, From Holberg’s Time",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-01.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/Grieg%27s_Suite_for_Strings%2C_Op._40%2C_%22From_Holberg%E2%80%99s_Time%22_-_I._Praeludium_-_Chamber_Orchestra_-_United_States_Marine_Band.mp3",
+      "bytes": 3714636,
+      "sha1": "49a747a22390a7640a76a3a09d246a6cc0e36375",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-02",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Grieg's Suite for Strings, Op. 40, From Holberg’s Time",
+      "title_ko": "그리그의 모음곡 for Strings, Op. 40, From Holberg’s Time",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-02.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/20/Grieg%27s_Suite_for_Strings%2C_Op._40%2C_%22From_Holberg%E2%80%99s_Time%22_-_II._Sarabande_-_Chamber_Orchestra_-_United_States_Marine_Band.mp3",
+      "bytes": 5671916,
+      "sha1": "f493f0030a73c1de04da5855fb5dd564bb955ecc",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-03",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Grieg's Suite for Strings, Op. 40, From Holberg’s Time",
+      "title_ko": "그리그의 모음곡 for Strings, Op. 40, From Holberg’s Time",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-03.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Grieg%27s_Suite_for_Strings%2C_Op._40%2C_%22From_Holberg%E2%80%99s_Time%22_-_III._Gavotte-Musette-Gavotte_-_Chamber_Orchestra_-_United_States_Marine_Band.mp3",
+      "bytes": 4632620,
+      "sha1": "329b9ca15a2059ab9a5a55fbef12d688e6aa8a0b",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-04",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Grieg's Suite for Strings, Op. 40, From Holberg’s Time",
+      "title_ko": "그리그의 모음곡 for Strings, Op. 40, From Holberg’s Time",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-04.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Grieg%27s_Suite_for_Strings%2C_Op._40%2C_%22From_Holberg%E2%80%99s_Time%22_-_IV._Air_-_Chamber_Orchestra_-_United_States_Marine_Band.mp3",
+      "bytes": 7210499,
+      "sha1": "fc873f0bb14db2aa6fcf96ee4981f5270d23b161",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-05",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Grieg's Suite for Strings, Op. 40, From Holberg’s Time",
+      "title_ko": "그리그의 모음곡 for Strings, Op. 40, From Holberg’s Time",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-05.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Grieg%27s_Suite_for_Strings%2C_Op._40%2C_%22From_Holberg%E2%80%99s_Time%22_-_V._Rigaudon_-_Chamber_Orchestra_-_United_States_Marine_Band.mp3",
+      "bytes": 6141101,
+      "sha1": "25fc7e505b61d027622d4d3a083f60ceeb931277",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-06",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Mozart's Serenade No. 10 Grand Partita",
+      "title_ko": "모차르트의 Serenade No. 10 Grand Partita",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-06.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Mozart%27s_Serenade_No._10_%22Grand_Partita%22_-_I._Largo._Molto_Allegro_-_United_States_Marine_Band.mp3",
+      "bytes": 8130597,
+      "sha1": "2e6df1a59574f041568ac91cfd6bb9a248562ad7",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-07",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Mozart's Serenade No. 10 Grand Partita",
+      "title_ko": "모차르트의 Serenade No. 10 Grand Partita",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-07.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Mozart%27s_Serenade_No._10_%22Grand_Partita%22_-_II._Menuetto_-_United_States_Marine_Band.mp3",
+      "bytes": 7725621,
+      "sha1": "138e37d35dbdbbdd2b1f17c0e0fc029ac1a335bd",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-08",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Mozart's Serenade No. 10 Grand Partita",
+      "title_ko": "모차르트의 Serenade No. 10 Grand Partita",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-08.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/60/Mozart%27s_Serenade_No._10_%22Grand_Partita%22_-_III._Adagio._Andante_-_United_States_Marine_Band.mp3",
+      "bytes": 4455333,
+      "sha1": "97ad74565bb284950b25db545c9fc3b9cf482734",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-09",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Mozart's Serenade No. 10 Grand Partita",
+      "title_ko": "모차르트의 Serenade No. 10 Grand Partita",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-09.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Mozart%27s_Serenade_No._10_%22Grand_Partita%22_-_IV._Menuetto._Allegretto_-_United_States_Marine_Band.mp3",
+      "bytes": 4218597,
+      "sha1": "70fed4874e6fdc3f72f0698d69ad5040da4a304c",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usmc-10",
+      "source_id": "commons:usmc-band",
+      "title_orig": "Mozart's Serenade No. 10 Grand Partita",
+      "title_ko": "모차르트의 Serenade No. 10 Grand Partita",
+      "composer_ko": null,
+      "performer_ko": "United States Marine Band",
+      "duration_seconds": null,
+      "filename": "usmc-10.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Mozart%27s_Serenade_No._10_%22Grand_Partita%22_-_V._Romance._Adagio_-_United_States_Marine_Band.mp3",
+      "bytes": 5643885,
+      "sha1": "4c98a9f0e3e7e370d44bb8db5fb4e565d6943b34",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "core",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-01",
+      "source_id": "commons:usn-band",
+      "title_orig": "Assembly",
+      "title_ko": "Assembly",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-01.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/fd/%22Assembly%22.mp3",
+      "bytes": 744995,
+      "sha1": "64a1ab14a552f03f81a2aec3c9dd3642b0dda9c6",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-02",
+      "source_id": "commons:usn-band",
+      "title_orig": "Attention",
+      "title_ko": "Attention",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-02.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/%22Attention%22.mp3",
+      "bytes": 619717,
+      "sha1": "5d58d5e865a32ff4e33af144a3989082753ea08b",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-03",
+      "source_id": "commons:usn-band",
+      "title_orig": "Jack Tar",
+      "title_ko": "Jack Tar",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-03.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/74/%22Jack_Tar%22%2C_played_by_the_U.S._Naval_Academy_Band.mp3",
+      "bytes": 3709213,
+      "sha1": "fe84a64ee641fdb9a784f5e3adcb6249f7c41036",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-04",
+      "source_id": "commons:usn-band",
+      "title_orig": "La Borinqueña",
+      "title_ko": "La Borinqueña",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-04.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/%22La_Borinque%C3%B1a%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 1876074,
+      "sha1": "66390a3041c88afd1279eb9a0af47ee27b3ff6a8",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-05",
+      "source_id": "commons:usn-band",
+      "title_orig": "Navy Blue and Gold",
+      "title_ko": "Navy Blue and Gold",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-05.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/11/%22Navy_Blue_and_Gold%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 3145213,
+      "sha1": "d7cea8e95f9eed34e9832aee57201397b744fc8b",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-06",
+      "source_id": "commons:usn-band",
+      "title_orig": "Reveille",
+      "title_ko": "Reveille",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-06.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/%22Reveille%22.mp3",
+      "bytes": 1283700,
+      "sha1": "48c6628b17a80a06ba1a0d2b8503620f5a6904e4",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-07",
+      "source_id": "commons:usn-band",
+      "title_orig": "Taps",
+      "title_ko": "Taps",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-07.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/%22Taps%22.mp3",
+      "bytes": 2447752,
+      "sha1": "bfea4c38a20610335f3874fb838fdceb98fe9341",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-08",
+      "source_id": "commons:usn-band",
+      "title_orig": "Tattoo",
+      "title_ko": "Tattoo",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-08.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/%22Tattoo%22.mp3",
+      "bytes": 3099212,
+      "sha1": "6261609b9c79ff585a2448bc523f721365386c7d",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-09",
+      "source_id": "commons:usn-band",
+      "title_orig": "The Destroyermen",
+      "title_ko": "The Destroyermen",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-09.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/%22The_Destroyermen%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 1846469,
+      "sha1": "c5c51cd0ba2a397318e2ba28c88383fd6bc1156c",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-10",
+      "source_id": "commons:usn-band",
+      "title_orig": "The Man of the Hour",
+      "title_ko": "The Man of the Hour",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-10.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/ec/%22The_Man_of_the_Hour%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 8558411,
+      "sha1": "e0c7d40d5399ee62893a57112bbbdbc451438999",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-11",
+      "source_id": "commons:usn-band",
+      "title_orig": "The New Colonial March",
+      "title_ko": "The New Colonial 행진곡",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-11.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/%22The_New_Colonial_March%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 8486319,
+      "sha1": "10185f85083b0f8a5b6ccf59c7532775029764dd",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-12",
+      "source_id": "commons:usn-band",
+      "title_orig": "The Song of the Seabees",
+      "title_ko": "The Song of the Seabees",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-12.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/%22The_Song_of_the_Seabees%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 1902903,
+      "sha1": "c1fde57452409be357d143942c84ff7be517ee88",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-13",
+      "source_id": "commons:usn-band",
+      "title_orig": "Waves of the Navy",
+      "title_ko": "Waves of the Navy",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-13.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d6/%22Waves_of_the_Navy%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 1826649,
+      "sha1": "49f154c8dce086a3c7fadb90993ae35e195fca20",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-14",
+      "source_id": "commons:usn-band",
+      "title_orig": "White Hat March",
+      "title_ko": "White Hat 행진곡",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-14.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/%22White_Hat_March%22%2C_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 7501817,
+      "sha1": "c2b9045df830701ec9def23b016324849fd8ba6a",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-15",
+      "source_id": "commons:usn-band",
+      "title_orig": "You're a Grand Old Flag",
+      "title_ko": "You're a Grand Old Flag",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-15.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/09/%22You%27re_a_Grand_Old_Flag%22_performed_by_the_United_States_Navy_Band.mp3",
+      "bytes": 1922703,
+      "sha1": "b509f4d5ba13ffb2fdba2141f08ec489fbdaf631",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    },
+    {
+      "id": "usn-16",
+      "source_id": "commons:usn-band",
+      "title_orig": "Victory at Sea-Donna Diana, overture to the opera",
+      "title_ko": "Victory at Sea-Donna Diana, 서곡 to the opera",
+      "composer_ko": null,
+      "performer_ko": "United States Navy Band",
+      "duration_seconds": null,
+      "filename": "usn-16.mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/02-United_States_Navy_Band-Victory_at_Sea-Donna_Diana%2C_overture_to_the_opera.mp3",
+      "bytes": 11016342,
+      "sha1": "55cc8f8d44693a1e13a0832e4081eb49048d6d08",
+      "sha256": null,
+      "playlists": [
+        "break"
+      ],
+      "tier": "extra",
+      "license": "Public domain"
+    }
+  ]
+}

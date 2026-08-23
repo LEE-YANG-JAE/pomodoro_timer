@@ -1,0 +1,14 @@
+[project]
+name = "pomodoro"
+version = "0.1.0"
+description = "클래식 음악과 함께하는 뽀모도로 타이머 (FastAPI + 바닐라 JS)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+    "pydantic>=2.9",
+    "python-multipart>=0.0.12",
+]
+
+[tool.setuptools]
+packages = ["server", "server.routes"]
