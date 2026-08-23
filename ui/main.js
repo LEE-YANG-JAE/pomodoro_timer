@@ -130,36 +130,6 @@ async function resumePlaybackIfRunning() {
   // 자동으로 열고 이어서 재생한다.
 }
 
-// ── 휴식 시작 유예 ──────────────────────────────────────────────────────────
-// 자동 시작이 켜져 있어도 곧바로 넘기지 않는다. 0:00 에 휴식이 시작되면 그 앞부분을
-// 하던 일 마무리에 쓰게 되어 5분 휴식이 실제로는 2분이 된다.
-let holdTimer = null;
-
-function clearHold() {
-  clearInterval(holdTimer);
-  holdTimer = null;
-  const bar = $("#hold-bar");
-  if (bar) bar.hidden = true;
-}
-
-function startHold(seconds) {
-  clearHold();
-  const bar = $("#hold-bar");
-  const label = $("#hold-label");
-  if (!bar || !label) { startTimer(); return; }
-
-  let left = seconds;
-  const phaseLabel = PHASE_LABEL[state.timer.phase] ?? state.timer.phase;
-  const tick = () => {
-    label.textContent = `${left}초 후 ${phaseLabel} 시작`;
-    if (left <= 0) { clearHold(); startTimer(); return; }
-    left -= 1;
-  };
-  bar.hidden = false;
-  tick();
-  holdTimer = setInterval(tick, 1000);
-}
-
 /** 음원이 없을 때만 보이는 인라인 안내. 마법사를 띄우지 않는다. */
 function renderFirstRun() {
   const node = $("#first-run");
@@ -260,10 +230,6 @@ function wireEvents() {
   });
 
   on("timer:gap", (gap) => openRecoveryModal(gap));
-  on("timer:hold", ({ seconds }) => startHold(seconds));
-  // 사용자가 직접 시작하거나 구간을 바꾸면 유예는 의미가 없다
-  on("timer:phase-start", () => clearHold());
-  on("timer:status", (d) => { if (d.status === "running") clearHold(); });
 
   on("timer:status", () => { renderExtendButton(); });
   on("timer:extended", ({ seconds }) =>
@@ -292,8 +258,6 @@ function wireEvents() {
   });
 
   on("timer:reset", () => {
-    // resetPhase() 는 phase-start 를 쏘지 않으므로 홀드바를 여기서 직접 정리한다.
-    clearHold();
     announce("현재 구간을 처음으로 되돌렸습니다.");
   });
 
@@ -382,8 +346,6 @@ function wireControls() {
     nvol.addEventListener("change", () =>
       updateSetting("audio", "noise_volume", Number(nvol.value), { immediate: true }));
   }
-
-  $("#btn-hold-now")?.addEventListener("click", () => { clearHold(); startTimer(); });
 
   $("#btn-first-download")?.addEventListener("click", async () => {
     const { startDownload } = await import("./modules/playlist.js");

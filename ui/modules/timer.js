@@ -13,10 +13,6 @@ import { toLocalISO, uid } from "./utils.js";
 
 const TICK_MS = 250;   // 표시 갱신용. 남은 시간은 언제나 endsAt 에서 재계산한다.
 const PREWARN_MS = 30_000;   // 구간 종료 몇 ms 전에 예고할 것인가
-// ★ 자동 시작이 켜져 있어도 곧바로 넘기지 않고 잠깐 붙잡는다.
-//   "휴식 침식" — 0:00 에 휴식이 자동 시작되면 그 앞부분을 하던 일 마무리에 쓰게 되어
-//   5분 휴식이 실제로는 2분이 된다. 유예를 두면 자동/수동 양쪽 요구를 동시에 만족한다.
-const HOLD_SECONDS = 20;
 let tickHandle = null;
 
 // ── 세트 ─────────────────────────────────────────────────────────────────────
@@ -202,11 +198,7 @@ function finishPhase({ endedAt = null, completed = true, actualMs = null } = {})
   }
 
   const wantsAuto = completed && shouldAutoStart(next);
-  setPhase(next, { autoStart: false, autoStarted: true, setIndex: nextSet });
-  if (wantsAuto) {
-    // 바로 시작하지 않고 UI 가 유예 카운트다운을 띄운다. 끝나면 startTimer() 를 부른다.
-    emit("timer:hold", { phase: next, seconds: HOLD_SECONDS });
-  }
+  setPhase(next, { autoStart: wantsAuto, autoStarted: true, setIndex: nextSet });
   return session;
 }
 
@@ -286,9 +278,8 @@ export function skipPhase() {
     nextSet = adv == null ? 0 : adv;
   }
   emit("timer:phase-end", { phase, next, session: null, lateMs: 0, completed: false });
-  // ★ 건너뛰기는 이미 명시적 사용자 행동이다 — finishPhase() 의 "조용한 자동 시작을
-  //   막기 위한 유예(timer:hold)" 도, auto_start_focus/break 설정 자체도 여기선
-  //   필요 없다. 사용자가 방금 "다음으로 넘어가겠다"고 눌렀으니 항상 바로 시작한다.
+  // ★ 건너뛰기는 이미 명시적 사용자 행동이다 — auto_start_focus/break 설정과 무관하게
+  //   사용자가 방금 "다음으로 넘어가겠다"고 눌렀으니 항상 바로 시작한다.
   setPhase(next, { autoStart: true, setIndex: nextSet });
   emit("timer:skipped", { phase, next });
 }

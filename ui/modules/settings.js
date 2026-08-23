@@ -88,8 +88,6 @@ export function renderSettingsView() {
   set("#set-chime-variant", s.audio.chime_enabled ? s.audio.chime_variant : "off");
   set("#set-noise-phases", s.audio.noise_phases);
 
-  set("#set-day-start", s.records.day_start_hour);
-  set("#set-goal", s.records.daily_goal);
   set("#set-theme", s.ui.theme);
   check("#set-notifications", s.ui.notifications);
   check("#set-wakelock", s.ui.wake_lock);
@@ -141,7 +139,7 @@ function bindSelect(sel, group, key, after = null) {
   if (!node) return;
   node.addEventListener("change", () => {
     const v = node.value === "" ? null : node.value;
-    updateSetting(group, key, key === "day_start_hour" ? Number(v) : v, { immediate: true });
+    updateSetting(group, key, v, { immediate: true });
     after?.(v);
   });
 }
@@ -292,8 +290,6 @@ export function initSettingsView() {
     for (const n of Object.values(NOISE_TYPES)) noiseSel.append(new Option(n.name_ko, n.id));
   }
 
-  bindNumber("#set-goal", "records", "daily_goal", { min: 1, max: 50 });
-
   // 세트 추가 — 마지막 세트를 복사해 붙인다 (대개 같은 길이를 이어서 쓰기 때문)
   $("#btn-add-set")?.addEventListener("click", () => {
     const arr = state.settings.timer.sets;
@@ -332,10 +328,6 @@ export function initSettingsView() {
     if (on) state.settings.audio.chime_variant = v;
     updateSetting("audio", "chime_enabled", on, { immediate: true });
     if (on) previewChime(v);
-  });
-  bindSelect("#set-day-start", "records", "day_start_hour", () => {
-    // 서버가 기존 기록의 날짜를 소급 재계산하므로 통계를 다시 읽어야 한다
-    import("./stats.js").then((m) => m.loadStats({ force: true }));
   });
   bindSelect("#set-theme", "ui", "theme", (v) => applyTheme(v || "auto"));
   bindSelect("#set-noise-phases", "audio", "noise_phases", () => syncNoise());

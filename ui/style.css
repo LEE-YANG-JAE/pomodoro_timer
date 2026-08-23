@@ -163,14 +163,8 @@ body[data-phase="break"] .ring-progress { stroke: var(--break); }
 }
 .volume { width: 96px; }
 
-.hold-bar {
-  display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; justify-content: center;
-  background: var(--accent-soft); color: var(--accent);
-  border-radius: 999px; padding: .35rem .7rem; font-size: .85rem;
-}
 /* ★ display:flex 가 [hidden] 의 UA display:none 을 이긴다(같은 명시도, author > UA 우선) —
    .advanced:not([open]) 와 같은 종류의 함정. hidden 이어도 계속 보이는 걸 실측으로 발견했다. */
-.hold-bar[hidden] { display: none; }
 .first-run {
   display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; justify-content: center;
   font-size: .84rem;

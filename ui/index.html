@@ -46,12 +46,6 @@
 
     <p id="cycle-dots" class="cycle-dots" aria-label="세트 진행 상황"></p>
 
-    <!-- 휴식 시작 유예 — 자동 시작이 켜져 있어도 잠깐 붙잡는다 (휴식 침식 방지) -->
-    <div id="hold-bar" class="hold-bar" role="status" hidden>
-      <span id="hold-label"></span>
-      <button id="btn-hold-now" class="btn btn-small btn-primary" type="button">지금 시작</button>
-    </div>
-
     <div class="controls">
       <button id="btn-reset" class="btn btn-ghost" type="button" aria-label="현재 구간 처음으로 (R)">초기화</button>
       <button id="btn-primary" class="btn btn-primary btn-lg" type="button" aria-label="시작">시작</button>
@@ -279,24 +273,6 @@
           소음 켜기·종류·음량은 타이머 화면에서 바로 조절합니다.
         </small>
       </label>
-    </div>
-
-    <h2 class="section-title">기록</h2>
-    <div class="fields">
-      <label class="field"><span>하루 시작 시각</span>
-        <select id="set-day-start">
-          <option value="0">자정 (0시)</option>
-          <option value="3">새벽 3시</option>
-          <option value="4">새벽 4시</option>
-          <option value="5">새벽 5시</option>
-          <option value="6">아침 6시</option>
-        </select>
-        <small class="field-hint">
-          새벽까지 일한 세션을 전날로 묶고 싶을 때. 변경하면 기존 기록도 다시 계산됩니다.
-        </small>
-      </label>
-      <label class="field"><span>하루 목표 (개)</span>
-        <input id="set-goal" type="number" min="1" max="50" step="1"></label>
     </div>
 
     <h2 class="section-title">화면</h2>
