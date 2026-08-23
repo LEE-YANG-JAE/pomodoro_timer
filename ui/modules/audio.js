@@ -27,6 +27,7 @@ let noiseBus = null;
 let noiseSource = null;      // 현재 재생 중인 소음 그래프
 const decks = [];          // { audio, gain, source }
 let duckTimer = null;
+let analyser = null;         // master 를 그대로 엿듣는 탭 — 그래프에 영향 없음
 
 const FLOOR = 0.0001;
 
@@ -88,6 +89,13 @@ export async function ensureAudio() {
     master.gain.value = 1;
     master.connect(ctx.destination);
 
+    // ★ 재생 확인용 — 실제로 소리가 나는지 눈으로 볼 수 있게 마스터 출력을 엿듣는다.
+    //   destination 과 별도 탭이라 오디오 그래프 자체에는 영향이 없다.
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 64;
+    analyser.smoothingTimeConstant = 0.75;
+    master.connect(analyser);
+
     musicBus = ctx.createGain();
     musicBus.connect(master);
 
@@ -110,7 +118,7 @@ export async function ensureAudio() {
       gain.connect(musicBus);
       audio.addEventListener("ended", () => onTrackEnded(i));
       audio.addEventListener("error", () => onTrackError(i));
-      decks.push({ audio, gain, source });
+      decks.push({ audio, gain, source, gen: 0 });
     }
     applyMusicVolume();
     applyNoiseVolume();
@@ -139,6 +147,21 @@ export function isAudioReady() {
 
 export function getContext() {
   return ctx;
+}
+
+// 시각화 루프가 초당 최대 60번 부른다 — 프레임마다 새 배열을 할당하지 않는다.
+// 항상 그 자리에서 즉시 소비되고(호출자가 그리자마자 버림) 다음 프레임에 덮어써지므로
+// 여러 시각화 인스턴스가 공유해도 안전하다.
+let levelsBuf = null;
+
+/** 마스터 출력의 주파수 대역 세기(0~255). 소리가 실제로 나는지 시각적으로 확인하는 용도. */
+export function getLevels() {
+  if (!analyser) return null;
+  if (!levelsBuf || levelsBuf.length !== analyser.frequencyBinCount) {
+    levelsBuf = new Uint8Array(analyser.frequencyBinCount);
+  }
+  analyser.getByteFrequencyData(levelsBuf);
+  return levelsBuf;
 }
 
 /** iOS 는 백그라운드에서 컨텍스트를 interrupted 로 떨어뜨린다 — 돌아오면 되살린다. */
@@ -230,6 +253,10 @@ function fade(gainNode, to, seconds) {
 async function playOnDeck(deckIndex, track, { fadeSec, startAt = 0 }) {
   const deck = decks[deckIndex];
   if (!deck || !track?.url) return false;
+  // ★ 이 덱을 새로 차지한다 — stopDeck() 이 예약해 둔 "나중에 pause·클리어" 타이머가
+  //   있었다면, 그건 방금 갈아 끼운 이 트랙이 아니라 이전 트랙을 대상으로 예약된
+  //   것이므로 세대가 바뀌었음을 표시해 그 타이머가 스스로 물러나게 한다.
+  deck.gen += 1;
   deck.audio.src = track.url;
   // ★ 메타데이터가 오기 전에 currentTime 을 넣으면 무시된다. loadedmetadata 를 기다린다.
   if (startAt > 0) {
@@ -309,9 +336,14 @@ function backfillDuration(audio, track) {
 function stopDeck(deckIndex, fadeSec) {
   const deck = decks[deckIndex];
   if (!deck) return;
+  const gen = deck.gen;      // "지금 멈추려는 그 트랙" 의 세대를 찍어 둔다
   fade(deck.gain, FLOOR, fadeSec);
   const ms = Math.max(0, fadeSec * 1000);
   setTimeout(() => {
+    // ★ 이 사이에 같은 덱이 새 트랙으로 재사용됐다면(세대가 바뀌었다면) 손대지 않는다.
+    //   그러지 않으면 방금 시작한 새 트랙을 이 낡은 타이머가 소리 없이 멈춰 버린다 —
+    //   "재생 중이라고는 뜨는데 소리도 시각화 막대도 안 움직인다" 버그의 원인이었다.
+    if (deck.gen !== gen) return;
     try {
       deck.audio.pause();
       deck.audio.removeAttribute("src");

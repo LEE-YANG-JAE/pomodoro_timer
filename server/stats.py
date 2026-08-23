@@ -110,8 +110,6 @@ def append_session(rec: dict) -> dict:
         "completed": bool(rec.get("completed", True)),
         "cycle_index": int(rec.get("cycle_index", 0)),
         "interruptions": int(rec.get("interruptions", 0)),
-        "interruptions_internal": int(rec.get("interruptions_internal", 0)),
-        "interruptions_external": int(rec.get("interruptions_external", 0)),
         "task_id": rec.get("task_id"),
         "task_name": rec.get("task_name"),
     }
@@ -182,20 +180,6 @@ def recompute_local_dates(day_start_hour: int) -> int:
 #   - 총 집중 시간  = 위 세션들의 actual_seconds 합
 #   - 중도 포기     = 개수/시간에 포함하지 않고 aborted_* 로 따로 보고
 
-def interruption_counts(s: dict) -> tuple[int, int, int]:
-    """(내부, 외부, 미분류).
-
-    ★ 새 키가 아예 없는 옛 레코드는 전부 **미분류**다. 옛 `interruptions` 는 사용자가
-      분류한 값이 아니라 자동 감지된 일시정지 횟수였으므로 내부로 귀속하면
-      "이번 주 내부 21회" 가 지어낸 숫자가 된다. 없는 정보는 없다고 말한다.
-    """
-    return (
-        int(s.get("interruptions_internal", 0) or 0),
-        int(s.get("interruptions_external", 0) or 0),
-        int(s.get("interruptions", 0) or 0),
-    )
-
-
 def _is_pomodoro(s: dict) -> bool:
     return s.get("phase") == "focus" and bool(s.get("completed"))
 
@@ -214,12 +198,7 @@ def today_summary(today: str) -> dict:
         "focus_seconds": sum(int(s.get("actual_seconds", 0)) for s in done),
         "aborted_count": len(aborted),
         "aborted_seconds": sum(int(s.get("actual_seconds", 0)) for s in aborted),
-        # interruptions 는 이제 **총합**이다 (내부 + 외부 + 미분류).
-        # 옛 값은 그 부분집합이므로 기존 표시가 깨지지 않는다.
-        "interruptions": sum(sum(interruption_counts(s)) for s in rows),
-        "interruptions_internal": sum(interruption_counts(s)[0] for s in rows),
-        "interruptions_external": sum(interruption_counts(s)[1] for s in rows),
-        "interruptions_unclassified": sum(interruption_counts(s)[2] for s in rows),
+        "interruptions": sum(int(s.get("interruptions", 0) or 0) for s in rows),
     }
 
 
@@ -290,11 +269,6 @@ def summary(days: int, today: str) -> dict:
     }
 
 
-def _window_dates(today: str, days: int) -> set[str]:
-    end = dt.date.fromisoformat(today)
-    return {(end - dt.timedelta(days=i)).isoformat() for i in range(max(1, days))}
-
-
 def task_pomodoro_counts(dates: set[str] | None = None) -> dict[str | None, int]:
     """작업 id → 완료 뽀모도로 수. dates=None 이면 전 기간.
 
@@ -313,61 +287,10 @@ def task_pomodoro_counts(dates: set[str] | None = None) -> dict[str | None, int]
     return out
 
 
-def task_rollup(today: str, days: int = 1, limit: int = 12) -> list[dict]:
-    """작업별 롤업. 뽀모도로 개수 내림차순.
-
-    ★ task_id 가 없는 세션도 하나의 버킷(task_id=None)으로 반드시 보여준다 —
-      작업을 고르지 않는 것은 합법이고, 그 시간을 숨기면 합계가 맞지 않는다.
-    이름은 그 기간에서 **가장 최근** task_name 을 쓴다 (이름은 수정될 수 있다).
-    """
-    dates = _window_dates(today, days)
-    buckets: dict[str | None, dict] = {}
-    for s in _load():
-        if s.get("local_date") not in dates or s.get("phase") != "focus":
-            continue
-        key = s.get("task_id")
-        b = buckets.setdefault(key, {
-            "task_id": key, "task_name": None, "pomodoro_count": 0,
-            "focus_seconds": 0, "interruptions_internal": 0, "interruptions_external": 0,
-        })
-        if s.get("task_name"):
-            b["task_name"] = s["task_name"]        # 뒤에 나오는 것이 더 최근이다
-        if _is_pomodoro(s):
-            b["pomodoro_count"] += 1
-            b["focus_seconds"] += int(s.get("actual_seconds", 0))
-        i, e, _ = interruption_counts(s)
-        b["interruptions_internal"] += i
-        b["interruptions_external"] += e
-    rows = sorted(buckets.values(), key=lambda b: -b["pomodoro_count"])
-    return rows[:limit]
-
-
-def interruption_summary(today: str, days: int = 7) -> dict:
-    """주간 방해 요약."""
-    dates = _window_dates(today, days)
-    internal = external = unclassified = 0
-    sessions = 0
-    for s in _load():
-        if s.get("local_date") not in dates or s.get("phase") != "focus":
-            continue
-        sessions += 1
-        i, e, u = interruption_counts(s)
-        internal += i
-        external += e
-        unclassified += u
-    total = internal + external + unclassified
-    return {
-        "days": days, "internal": internal, "external": external,
-        "unclassified": unclassified, "sessions": sessions,
-        "per_session": round(total / sessions, 2) if sessions else 0.0,
-    }
-
-
 _CSV_COLUMNS = [
     "id", "client_id", "local_date", "started_at", "ended_at", "phase",
     "planned_seconds", "actual_seconds", "completed", "cycle_index",
     "task_id", "task_name",
-    "interruptions_internal", "interruptions_external", "interruptions_unclassified",
 ]
 
 
@@ -403,14 +326,12 @@ def iter_csv(*, date_from: str | None = None, date_to: str | None = None):
     yield flush()
 
     for r in rows:
-        i, e, u = interruption_counts(r)
         writer.writerow([
             r.get("id", ""), r.get("client_id") or "", r.get("local_date", ""),
             r.get("started_at", ""), r.get("ended_at", ""), r.get("phase", ""),
             r.get("planned_seconds", 0), r.get("actual_seconds", 0),
             "true" if r.get("completed") else "false", r.get("cycle_index", 0),
             r.get("task_id") or "", r.get("task_name") or "",
-            i, e, u,
         ])
         yield flush()
 

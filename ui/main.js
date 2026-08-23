@@ -3,8 +3,8 @@
 import { PHASE_LABEL, on, state } from "./modules/state.js";
 import { $, fmtDuration, flashUndoToast, initTheme, showToast } from "./modules/utils.js";
 import {
-  addInterruption, applyDurationChange, extendPhase, initTimer, pauseTimer, phaseSeconds,
-  resetPhase, skipPhase, startTimer, toggleTimer, undoInterruption, undoSkip,
+  applyDurationChange, extendPhase, initTimer, pauseTimer, phaseSeconds,
+  resetPhase, skipPhase, startTimer, toggleTimer, undoSkip,
 } from "./modules/timer.js";
 import {
   ensureAudio, initAudioLifecycle, nextTrack, pauseMusic, prevTrack, resumeMusic,
@@ -23,7 +23,7 @@ import {
   switchView, toggleFocusMode,
 } from "./modules/ui.js";
 import {
-  flushQueue, initRecordsView, initStatsSync, loadInsights, loadSessionList, loadStats,
+  flushQueue, initRecordsView, initStatsSync, loadSessionList, loadStats,
   localApplySession, recordSession, renderStatsView,
 } from "./modules/stats.js";
 import {
@@ -31,11 +31,12 @@ import {
   updateSetting,
 } from "./modules/settings.js";
 import {
-  initPlaylistView, loadTracks, pollDownloadStatus, renderCredits, renderPlaylistView,
+  initPlaylistView, loadTracks, pollDownloadStatus, renderCredits, renderNowPlayingMini,
+  renderPlaylistView, updateNowPlayingRow,
 } from "./modules/playlist.js";
 import {
   initTasksView, loadTasks, localApplyTaskPomodoro, renderActiveTaskLabel,
-  renderProjection, renderTaskList, withActiveTask,
+  renderTaskList, withActiveTask,
 } from "./modules/tasks.js";
 import { initSearchView } from "./modules/search.js";
 import { initShortcuts } from "./modules/shortcuts.js";
@@ -73,7 +74,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   loadTasks().then(() => {
     renderTaskList();
     renderActiveTaskLabel();
-    renderProjection();
   });
   flushQueue();
 
@@ -168,26 +168,6 @@ function renderFirstRun() {
   node.hidden = anyReady || state.settings.audio.silent_mode;
 }
 
-/** 방해 기록 바 — 집중이 돌고 있을 때만 의미가 있다. */
-function renderInterruptBar() {
-  const bar = $("#interrupt-bar");
-  if (!bar) return;
-  bar.hidden = !(state.timer.phase === "focus" && state.timer.status === "running");
-}
-
-/** 틱 표시 — I 키를 누른 보상이 같은 프레임에 눈에 보여야 이 기능이 살아남는다. */
-function renderInterruptionTicks() {
-  const node = $("#interruption-ticks");
-  if (!node) return;
-  const i = state.timer.interruptionsInternal;
-  const e = state.timer.interruptionsExternal;
-  const total = i + e;
-  if (!total) { node.textContent = ""; node.removeAttribute("title"); return; }
-  const glyphs = "●".repeat(Math.min(i, 10)) + "▲".repeat(Math.min(e, 10));
-  node.textContent = total > 20 ? `${glyphs} ×${total}` : glyphs;
-  node.title = `내부 ${i}회 · 외부 ${e}회`;
-}
-
 function renderExtendButton() {
   const btn = $("#btn-extend");
   if (btn) btn.hidden = state.timer.status !== "running";
@@ -218,7 +198,6 @@ function wireEvents() {
     renderTimer(d);
     updateTitle(d.remainingMs, d.phase, d.status);
     updateFavicon(d.progress, d.phase, d.status);
-    renderProjection({ throttle: true });   // 분 단위 문자열을 4Hz 로 다시 계산하지 않는다
   });
 
   on("timer:phase-start", async (d) => {
@@ -236,8 +215,6 @@ function wireEvents() {
     syncNoise(d.phase);
     renderSetList();          // 현재 세트 강조를 갱신
     renderActiveTaskLabel();
-    renderInterruptBar();
-    renderInterruptionTicks();
     const total = state.settings.timer.sets?.length ?? 1;
     announce(`${d.setIndex + 1}세트 ${PHASE_LABEL[d.phase]} ` +
              `${fmtDuration(d.plannedMs / 1000)} 시작 (전체 ${total}세트)`);
@@ -251,7 +228,8 @@ function wireEvents() {
       localApplySession(session);        // 낙관적 — 끝내자마자 숫자가 오른다
       localApplyTaskPomodoro(session);   // 낙관적 2/4 → 3/4
       recordSession(session);
-      if (state.ui.view === "records") { loadSessionList(); loadInsights(); }
+      // ★ 달력에서 과거 날짜를 보고 있었다면 그 선택을 존중한다 — 오늘로 되돌리지 않는다.
+      if (state.ui.view === "records") loadSessionList($("#session-date")?.value || undefined);
     }
     notifyPhase(d.phase, d.next);
     announce(`${PHASE_LABEL[d.phase]} 시간이 끝났습니다. ${PHASE_LABEL[d.next]}을 시작합니다.`);
@@ -287,8 +265,7 @@ function wireEvents() {
   on("timer:phase-start", () => clearHold());
   on("timer:status", (d) => { if (d.status === "running") clearHold(); });
 
-  on("timer:status", () => { renderInterruptBar(); renderExtendButton(); });
-  on("timer:interruption", renderInterruptionTicks);
+  on("timer:status", () => { renderExtendButton(); });
   on("timer:extended", ({ seconds }) =>
     showToast(`${Math.round(seconds / 60)}분 연장했습니다.`, { ms: 1600 }));
 
@@ -298,7 +275,7 @@ function wireEvents() {
     setTimeout(() => { delete document.body.dataset.endingSoon; }, 31_000);
   });
 
-  on("tasks:changed", () => { renderActiveTaskLabel(); renderProjection(); });
+  on("tasks:changed", () => { renderActiveTaskLabel(); });
 
   on("timer:plan-done", () => {
     showToast("계획한 세트를 모두 마쳤습니다. 수고하셨어요!", { kind: "ok", ms: 6000 });
@@ -315,9 +292,8 @@ function wireEvents() {
   });
 
   on("timer:reset", () => {
-    // resetPhase() 는 phase-start 를 쏘지 않으므로 홀드바·방해 틱을 여기서 직접 정리한다.
+    // resetPhase() 는 phase-start 를 쏘지 않으므로 홀드바를 여기서 직접 정리한다.
     clearHold();
-    renderInterruptionTicks();
     announce("현재 구간을 처음으로 되돌렸습니다.");
   });
 
@@ -333,14 +309,16 @@ function wireEvents() {
     renderNowPlaying();
     renderPlayerControls();
     updateMediaSession(track, state.timer.phase);
-    if (state.ui.view === "music") renderPlaylistView();
+    renderNowPlayingMini();
+    updateNowPlayingRow();
   });
 
   document.addEventListener("view:changed", (e) => {
     const v = e.detail.view;
-    if (v === "records") { loadStats(); loadSessionList(); loadInsights(); }
-    if (v === "music") { renderPlaylistView(); renderCredits(); }
+    if (v === "records") { loadStats(); loadSessionList($("#session-date")?.value || undefined); }
+    if (v === "music") { renderPlaylistView(); renderCredits(); renderNowPlayingMini(); }
     if (v === "settings") renderSettingsView();
+    if (v === "timer") renderNowPlaying();
   });
 
   window.addEventListener("online", flushQueue);
@@ -418,8 +396,6 @@ function wireControls() {
   });
 
   $("#btn-extend")?.addEventListener("click", () => extendPhase(300));
-  $("#btn-int-internal")?.addEventListener("click", () => recordInterruption("internal"));
-  $("#btn-int-external")?.addEventListener("click", () => recordInterruption("external"));
 
   $("#btn-skip")?.addEventListener("click", () => skipPhase());
   $("#btn-reset")?.addEventListener("click", () => resetPhase());
@@ -480,7 +456,6 @@ function wireControls() {
   }
 
   renderPlayerControls();
-  renderInterruptBar();
   renderExtendButton();
   $("#btn-help")?.addEventListener("click", () => openShortcutsHelp());
 
@@ -496,30 +471,12 @@ function wireControls() {
     },
     nextTrack: () => nextTrack(),
     toggleNoise: () => $("#btn-noise")?.click(),
-    interruption: (kind) => recordInterruption(kind),
     extend: () => { if (state.timer.status === "running") extendPhase(300); },
     toggleMusic: () => $("#btn-music-toggle")?.click(),
     toggleShuffle: () => $("#btn-shuffle")?.click(),
     switchView: (v) => switchView(v),
     help: () => openShortcutsHelp(),
   });
-}
-
-/**
- * 방해 1건 기록. 대화상자 없음, 분류 메뉴 없음 — 한 동작에 결정 0개여야
- * 이 기능이 실제로 쓰인다. 보상(틱)은 같은 프레임에 나타나고 되돌리기도 붙는다.
- */
-function recordInterruption(kind) {
-  if (!addInterruption(kind)) {
-    showToast("집중이 진행 중일 때만 기록됩니다.", { ms: 1600 });
-    return;
-  }
-  const label = kind === "external" ? "외부" : "내부";
-  flashUndoToast(`${label} 방해 기록`, () => {
-    undoInterruption(kind);
-    renderInterruptionTicks();
-  }, 3000);
-  announce(`${label} 방해를 기록했습니다.`);
 }
 
 // 스모크 테스트에서 오디오 그래프 상태를 들여다볼 수 있게 노출한다.

@@ -64,11 +64,6 @@ export function initShortcuts(handlers) {
         e.preventDefault();
         handlers.toggleNoise();
         break;
-      case "KeyI":
-        // Shift 는 여기서 의미가 있다 — "밖에서 온 방해"
-        e.preventDefault();
-        handlers.interruption(e.shiftKey ? "external" : "internal");
-        break;
       case "KeyE":
         e.preventDefault();
         handlers.extend();

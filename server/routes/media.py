@@ -24,8 +24,14 @@ _FORBIDDEN = [
 
 
 def _forbidden(path: Path) -> bool:
+    # ★ 경로 구분자 경계까지 확인한다 — 단순 startswith() 면 "C:\windows2\music" 같은
+    #   형제 폴더가 "C:\windows" 접두사에 걸려 오탐 차단된다.
     p = str(path).lower().replace("/", os.sep).replace("\\", os.sep)
-    return any(p.startswith(f.replace("\\", os.sep).replace("/", os.sep)) for f in _FORBIDDEN)
+    for f in _FORBIDDEN:
+        f = f.replace("\\", os.sep).replace("/", os.sep)
+        if p == f or p.startswith(f + os.sep):
+            return True
+    return False
 
 
 def _safe_resolve(raw: str) -> Path:
@@ -56,7 +62,7 @@ def get_catalog(tier: str | None = Query(None)) -> dict:
     items = catalog.tracks_by_tier(tier)
     return {
         "sources": catalog.sources(),
-        "tracks": [{**t, "ready": media.is_ready(t["id"])} for t in items],
+        "tracks": [{**t, "ready": media.is_ready(t["id"], resolved=t)} for t in items],
         "ready_count": media.ready_count(),
     }
 
@@ -261,6 +267,10 @@ def import_folder(body: ImportIn) -> dict:
 
     imported: list[dict] = []
     skipped = 0
+    # ★ assert_media_budget() 은 매번 media/ 전체를 재귀 스캔한다. 파일마다 부르면
+    #   최대 MAX_IMPORT_FILES(200)번 전체 디스크를 훑는 꼴이라, 루프 진입 전에 한 번만
+    #   재고 이후로는 방금 받은 만큼만 누적한다.
+    used_bytes = input_limits.media_bytes_on_disk()
     for raw_name in body.names:
         # ★ 클라이언트가 준 이름을 그대로 붙이지 않는다. basename 만 취하고,
         #   합쳐진 경로가 선언된 폴더 안에 있는지 서버가 다시 확인한다.
@@ -288,9 +298,7 @@ def import_folder(body: ImportIn) -> dict:
         if size == 0 or size > input_limits.MAX_AUDIO_BYTES:
             skipped += 1
             continue
-        try:
-            input_limits.assert_media_budget(size)
-        except HTTPException:
+        if used_bytes + size > config.MEDIA_MAX_TOTAL_BYTES:
             break       # 예산 초과 — 여기서 멈추고 지금까지 가져온 것만 보고한다
 
         track_id = f"u-{uuid.uuid4().hex[:12]}"
@@ -322,7 +330,10 @@ def import_folder(body: ImportIn) -> dict:
             "license": None,
             "integrity": "none",
         }
-        playlists.register_user_track(entry)
+        used_bytes += size
         imported.append(entry)
+
+    if imported:
+        playlists.register_user_tracks(imported)   # 락 한 번으로 일괄 등록
 
     return {"imported": len(imported), "skipped": skipped, "tracks": imported}

@@ -155,6 +155,15 @@ function pushSets() {
   renderCycleDots();
 }
 
+/** 세트 순서 바꾸기. tasks.js#reorderTask / playlist.js#reorderTrack 과 같은 패턴. */
+function reorderSet(i, dir) {
+  const arr = state.settings.timer.sets;
+  const j = i + dir;
+  if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  pushSets();
+}
+
 /** 분 단위 입력 → 초. 사용자가 빈칸이나 이상한 값을 넣어도 안전하게. */
 function minutesToSeconds(raw, fallbackSec, maxMinutes = 180) {
   const v = Number(raw);
@@ -210,20 +219,12 @@ export function renderSetList() {
         el("button", {
           class: "icon-btn", type: "button", title: "위로", disabled: i === 0,
           "aria-label": `${i + 1}번째 세트 위로`,
-          onclick: () => {
-            const arr = state.settings.timer.sets;
-            [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]];
-            pushSets();
-          },
+          onclick: () => reorderSet(i, -1),
         }, "▲"),
         el("button", {
           class: "icon-btn", type: "button", title: "아래로", disabled: i === list.length - 1,
           "aria-label": `${i + 1}번째 세트 아래로`,
-          onclick: () => {
-            const arr = state.settings.timer.sets;
-            [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]];
-            pushSets();
-          },
+          onclick: () => reorderSet(i, 1),
         }, "▼"),
         el("button", {
           class: "icon-btn", type: "button", title: "복제",

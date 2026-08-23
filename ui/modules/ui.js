@@ -1,8 +1,13 @@
 // 화면 렌더링 — 타이머 뷰 · 집중 모드 · 복구 모달 · 접근성 안내.
 
 import { PHASE_LABEL, state } from "./state.js";
-import { $, $$, el, fmtClock, fmtClockSr, fmtDuration, openModal, closeModal } from "./utils.js";
+import {
+  $, $$, createLevelVisualizer, el, fmtClock, fmtClockSr, fmtDuration, openModal, closeModal,
+} from "./utils.js";
 import { resolveGap } from "./timer.js";
+import { getLevels } from "./audio.js";
+
+const nowPlayingViz = createLevelVisualizer("tv-visualizer", getLevels);
 
 // 진행 링의 원주 (r=130 → 2πr)
 const RING_R = 130;
@@ -119,11 +124,13 @@ export function renderNowPlaying() {
   if (!t) {
     host.textContent = state.settings.audio.silent_mode ? "무음 모드" : "재생 중인 곡 없음";
     host.removeAttribute("title");
+    nowPlayingViz.stop();
     return;
   }
   const who = t.performer_ko || t.composer_ko || "";
   host.textContent = who ? `${t.title_ko} — ${who}` : t.title_ko;
   host.title = `${t.title_orig ?? t.title_ko}${who ? ` / ${who}` : ""}`;
+  nowPlayingViz.start();
 }
 
 // ── 집중 모드 ────────────────────────────────────────────────────────────────
@@ -214,7 +221,6 @@ export function openShortcutsHelp() {
     ["Space", "시작 / 일시정지"],
     ["S", "현재 구간 건너뛰기"],
     ["E", "5분 연장"],
-    ["I / Shift+I", "내부 / 외부 방해 기록"],
     ["R", "현재 구간 처음으로"],
     ["F", "집중 모드 켜기 / 끄기"],
     ["M", "음소거"],

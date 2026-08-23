@@ -95,15 +95,13 @@ main { max-width: 720px; margin: 0 auto; padding: 1.4rem 1.1rem 4rem; }
   margin: .6rem 0 0; font-size: 1.05rem; font-weight: 600; letter-spacing: .04em;
   color: var(--focus);
 }
-body[data-phase="short_break"] .phase-label { color: var(--break); }
-body[data-phase="long_break"] .phase-label { color: var(--long-break); }
+body[data-phase="break"] .phase-label { color: var(--break); }
 
 .ring-wrap { position: relative; width: min(300px, 78vw); aspect-ratio: 1; }
 .ring { width: 100%; height: 100%; display: block; }
 .ring-track { stroke: var(--ring-track); }
 .ring-progress { stroke: var(--focus); transition: stroke-dashoffset .28s linear; }
-body[data-phase="short_break"] .ring-progress { stroke: var(--break); }
-body[data-phase="long_break"] .ring-progress { stroke: var(--long-break); }
+body[data-phase="break"] .ring-progress { stroke: var(--break); }
 
 .countdown {
   position: absolute; inset: 0;
@@ -181,24 +179,13 @@ body[data-phase="long_break"] .ring-progress { stroke: var(--long-break); }
 /* 종료 30초 전 — 토스트가 아니라 링 색만 조용히 바꾼다 */
 body[data-ending-soon] .ring-progress { stroke: var(--long-break); }
 
-/* ── 활성 작업 · 방해 기록 ──────────────────────────────────────────────── */
+/* ── 활성 작업 ────────────────────────────────────────────────────────── */
 .active-task {
   position: absolute; left: 50%; top: 63%; transform: translateX(-50%);
   margin: 0; max-width: 80%; text-align: center;
   font-size: .88rem; color: var(--text-dim);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
-.interrupt-bar { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; justify-content: center; }
-.interrupt-bar[hidden] { display: none; }
-.tick-btn {
-  font: inherit; font-size: .78rem; cursor: pointer;
-  background: transparent; color: var(--text-dim);
-  border: 1px solid var(--border); border-radius: 999px;
-  padding: .18rem .55rem; min-height: 28px;
-}
-.tick-btn:hover { color: var(--text); border-color: var(--text-dim); }
-.ticks { font-size: .8rem; letter-spacing: .12em; color: var(--text-dim); }
 
 /* ── 오늘 할 일 ─────────────────────────────────────────────────────────── */
 .task-panel {
@@ -208,7 +195,11 @@ body[data-ending-soon] .ring-progress { stroke: var(--long-break); }
 }
 .task-head { display: flex; align-items: baseline; gap: .6rem; justify-content: space-between; }
 .task-head .section-title { margin: 0 0 .5rem; }
-.task-projection { font-size: .78rem; color: var(--text-dim); }
+.date-input {
+  font: inherit; font-size: .85rem; padding: .3rem .5rem;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+}
 
 .task-list { list-style: none; margin: 0 0 .5rem; padding: 0; display: flex; flex-direction: column; gap: .2rem; }
 .task-row {
@@ -235,20 +226,12 @@ body[data-ending-soon] .ring-progress { stroke: var(--long-break); }
   padding: .15rem .35rem; background: var(--surface); color: var(--text);
   border: 1px solid var(--accent); border-radius: 5px;
 }
-.task-count { font-size: .78rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-.task-actions { display: flex; gap: 0; opacity: 0; transition: opacity .12s; }
-.task-row:hover .task-actions,
-.task-row:focus-within .task-actions { opacity: 1; }
+.task-actions { display: flex; gap: 0; }
 .task-actions .icon-btn { min-width: 26px; min-height: 26px; font-size: .75rem; }
 
 .task-add { display: flex; gap: .35rem; }
 .task-name-input {
   flex: 1; min-width: 0; font: inherit; font-size: .88rem; padding: .4rem .55rem;
-  background: var(--surface); color: var(--text);
-  border: 1px solid var(--border); border-radius: 8px;
-}
-.task-est-input {
-  width: 3.4rem; font: inherit; font-size: .88rem; padding: .4rem .3rem; text-align: center;
   background: var(--surface); color: var(--text);
   border: 1px solid var(--border); border-radius: 8px;
 }
@@ -281,15 +264,13 @@ body[data-focus="on"] .topbar,
 body[data-focus="on"] .player,
 body[data-focus="on"] .noise-bar,
 body[data-focus="on"] #task-panel,
-body[data-focus="on"] .tick-btn,
 body[data-focus="on"] #btn-focus-mode,
 body[data-focus="on"] .controls .btn-ghost { opacity: 0; pointer-events: none; }
 body[data-focus="on"] { background: #0e0d10; color: #e8e4e0; }
 body[data-focus="on"] .countdown { color: #e8e4e0; }
-/* ★ #active-task 와 #interruption-ticks 는 감추지 않는다 — 집중 모드에서 유일하게
-   남아야 할 정보가 "지금 이 작업" 이고, 틱은 I 키의 보상이 보이는 유일한 수단이다. */
+/* ★ #active-task 는 감추지 않는다 — 집중 모드에서 유일하게 남아야 할 정보가
+   "지금 이 작업" 이다. */
 body[data-focus="on"] .active-task { color: #8b847d; }
-body[data-focus="on"] .ticks { color: #8b847d; }
 body[data-focus="on"] .ring-track { stroke: #262229; }
 body[data-focus="on"] .exit-focus { display: block; }
 .exit-focus {
@@ -389,6 +370,24 @@ body[data-focus="on"] .exit-focus { display: block; }
 .filters .btn[aria-pressed="true"] {
   background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft);
 }
+
+/* 목록을 스크롤해도 재생 중인 곡이 화면 밖으로 사라지지 않게 하단에 고정한다. */
+[data-view-panel="music"] { padding-bottom: 4.2rem; }
+.now-playing-bar {
+  position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%);
+  width: min(720px, calc(100vw - 2rem));
+  z-index: 50;
+  display: flex; align-items: center; gap: .6rem;
+  background: var(--accent-soft); border: 1px solid var(--border);
+  border-radius: 9px; padding: .4rem .7rem; box-shadow: var(--shadow);
+}
+/* ★ display:flex 가 [hidden] 의 UA display:none 을 이긴다 — .hold-bar 와 같은 함정. */
+.now-playing-bar[hidden] { display: none; }
+.now-playing-title {
+  flex: 1; min-width: 0; font-size: .85rem; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.level-viz { flex: none; border-radius: 4px; background: var(--surface-2); }
 
 .track-list { display: flex; flex-direction: column; gap: .3rem; }
 .track-row {

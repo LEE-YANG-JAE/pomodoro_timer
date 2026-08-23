@@ -36,7 +36,11 @@ class SessionIn(BaseModel):
     #   4xx 를 영구 실패로 보고 폐기하므로, 업그레이드 시점에 큐에 남아 있던
     #   옛 페이로드가 전부 조용히 버려진다 — 25분씩 버틴 세션들이.
     interruptions: int = Field(0, ge=0, le=1000)
-    # 사용자가 I / Shift+I 로 직접 기록한 방해
+    # ★ 프론트는 더 이상 이 두 필드를 보내지 않는다(예전 수동 내부/외부 방해 로깅
+    #   기능 제거됨). 그래도 필드는 남겨 둔다 — 업그레이드 시점에 오프라인 큐에
+    #   남아 있던 옛 페이로드가 이 필드를 포함해 재전송될 수 있는데, extra="forbid"
+    #   에서 지웠다면 그 요청 전체가 422 로 거부되어 세션 자체가 사라진다.
+    #   받되 저장/집계하지 않는다(아래 append_session 참고).
     interruptions_internal: int = Field(0, ge=0, le=1000)
     interruptions_external: int = Field(0, ge=0, le=1000)
 
@@ -97,21 +101,6 @@ def get_sessions(
     date: str | None = Query(None),
 ) -> dict:
     return stats.list_sessions(limit=limit, offset=offset, date=date)
-
-
-@router.get("/insights")
-def get_insights(
-    days: int = Query(7, ge=1, le=365),
-    today: str | None = Query(None),
-    limit: int = Query(12, ge=1, le=100),
-) -> dict:
-    """주간 방해 요약 + 작업별 롤업. 기록 화면의 인사이트 한 줄에 쓴다."""
-    d = stats.resolve_today(today)
-    return {
-        "days": days,
-        "interruptions": stats.interruption_summary(d, days),
-        "by_task": stats.task_rollup(d, days, limit),
-    }
 
 
 @router.get("/export.csv")

@@ -1,14 +1,11 @@
-// 오늘 할 일 — 목록 · 활성 작업 · 예상 완료 시각.
+// 오늘 할 일 — 목록 · 활성 작업.
 //
 // ★ timer.js 는 작업을 모른다. 세션에 작업을 붙이는 일은 main.js(배선 계층)가
-//   withActiveTask() 를 호출해서 한다. 여기서 timer.js 를 import 하는 것은
-//   예상 완료 시각 계산에 세트 길이와 남은 시간이 필요해서이고, 방향은 단방향이다
-//   (timer.js 는 state.js / utils.js 만 import 한다).
+//   withActiveTask() 를 호출해서 한다.
 
 import { API } from "./api.js";
 import { LS, emit, lsGet, lsSet, state } from "./state.js";
-import { $, confirmModal, el, fmtDuration, fmtTimeKo, localDateStr, showToast } from "./utils.js";
-import { getRemainingMs, sets } from "./timer.js";
+import { $, confirmModal, el, fmtDuration, localDateStr, showToast } from "./utils.js";
 
 // ── 로드 ─────────────────────────────────────────────────────────────────────
 
@@ -63,9 +60,7 @@ export function localApplyTaskPomodoro(session) {
   if (!t) return;
   t.done_pomodoros = (t.done_pomodoros ?? 0) + 1;
   t.done_today = (t.done_today ?? 0) + 1;
-  t.remaining_est = Math.max(0, (t.est_pomodoros ?? 0) - t.done_pomodoros);
   renderTaskList();
-  renderProjection();
 }
 
 // ── 변경 (전부 낙관적 → 실패 시 되돌린다) ───────────────────────────────────
@@ -81,7 +76,6 @@ async function mutate(fn, { optimistic = null } = {}) {
   await loadTasks({ force: true });
   renderTaskList();
   renderActiveTaskLabel();
-  renderProjection();
 }
 
 export async function addTask(name, est) {
@@ -139,51 +133,6 @@ export async function removeTask(id) {
   await mutate(() => API.deleteTask(id));
 }
 
-// ── 예상 완료 시각 ───────────────────────────────────────────────────────────
-
-/**
- * 남은 예상 뽀모도로를 사이클 세트를 따라 걸으며 합산한다.
- *
- * ★ 서버가 계산할 수 없다. `finish_at = now + X` 는 직렬화되는 순간 낡고,
- *   진행 중인 구간의 남은 밀리초는 브라우저에만 있다(endsAt 이 단일 진실원).
- * ★ 마지막 휴식은 뺀다 — "마지막 뽀모도로가 언제 끝나는가" 이지
- *   "마지막 휴식이 언제 끝나는가" 가 아니다.
- */
-export function projectFinish(now = Date.now()) {
-  let R = state.tasks.items
-    .filter((t) => !t.completed)
-    .reduce((a, t) => a + Math.max(0, (t.est_pomodoros ?? 0) - (t.done_pomodoros ?? 0)), 0);
-  if (R <= 0) return null;
-
-  const T = state.timer;
-  const list = sets();
-  const total = R;
-  let ms = 0;
-  let i = Math.min(T.setIndex ?? 0, list.length - 1);
-  let wrapped = false;
-  const step = () => { i += 1; if (i >= list.length) { i = 0; wrapped = true; } };
-
-  if (T.status !== "idle") {
-    ms += getRemainingMs(now);
-    if (T.phase === "focus") {
-      R -= 1;
-      if (R > 0) ms += list[i].break_seconds * 1000;
-      step();
-    } else {
-      step();                       // 휴식이 끝나면 다음 세트의 집중
-    }
-  }
-
-  for (let k = 0; k < R; k += 1) {
-    ms += list[i].focus_seconds * 1000;
-    if (k < R - 1) ms += list[i].break_seconds * 1000;   // ★ 마지막 휴식 제외
-    step();
-  }
-
-  return { at: new Date(now + ms), remaining: total,
-           beyondPlan: wrapped && !state.settings.timer.repeat };
-}
-
 // ── 렌더 ─────────────────────────────────────────────────────────────────────
 
 export function renderActiveTaskLabel() {
@@ -197,27 +146,6 @@ export function renderActiveTaskLabel() {
   }
   node.hidden = false;
   node.textContent = t.name;
-  node.title = `${t.name} — ${t.done_pomodoros ?? 0}/${t.est_pomodoros ?? 0}`;
-}
-
-let lastProjectionAt = 0;
-
-export function renderProjection({ throttle = false } = {}) {
-  // 분 단위 문자열을 4Hz 로 다시 계산할 이유가 없다
-  if (throttle && Date.now() - lastProjectionAt < 15000) return;
-  lastProjectionAt = Date.now();
-
-  const node = $("#task-projection");
-  if (!node) return;
-  const p = projectFinish();
-  if (!p) {
-    node.textContent = "";        // 빈 목록은 잔소리하지 않는다
-    return;
-  }
-  const sameDay = p.at.toDateString() === new Date().toDateString();
-  const when = sameDay ? fmtTimeKo(p.at) : `내일 ${fmtTimeKo(p.at)}`;
-  node.textContent = `예상 완료 ${when} · 남은 ${p.remaining}개`
-    + (p.beyondPlan ? " (계획 밖)" : "");
 }
 
 export function renderTaskList() {
@@ -248,11 +176,7 @@ export function renderTaskList() {
         "aria-label": `${t.name} 선택`,
         onclick: () => setActiveTask(t.id),
       },
-        el("span", { class: "task-name", text: t.name }),
-        el("span", {
-          class: "task-count",
-          "aria-label": `${t.est_pomodoros}개 중 ${t.done_pomodoros}개 완료`,
-        }, `${t.done_pomodoros ?? 0}/${t.est_pomodoros ?? 0}`)),
+        el("span", { class: "task-name", text: t.name })),
       el("div", { class: "task-actions" },
         el("button", { class: "icon-btn", type: "button", "aria-label": `${t.name} 위로`,
                        onclick: () => reorderTask(t.id, -1) }, "▲"),
@@ -303,13 +227,10 @@ export function initTasksView() {
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const nameEl = $("#task-name");
-    const estEl = $("#task-est");
     const name = nameEl?.value ?? "";
-    const est = Math.max(1, Math.min(40, Number(estEl?.value) || 1));
     if (!name.trim()) return;
     if (nameEl) nameEl.value = "";
-    if (estEl) estEl.value = "1";
-    await addTask(name, est);
+    await addTask(name, 1);
     nameEl?.focus();
   });
 

@@ -6,7 +6,6 @@
 """
 from __future__ import annotations
 
-import hashlib
 import logging
 import mimetypes
 
@@ -116,19 +115,6 @@ def _register_mimetypes() -> None:
     mimetypes.add_type("audio/ogg", ".opus")
 
 
-def _ui_version() -> str:
-    """프론트 자산 해시 — 프론트가 폴링해 새로고침 필요를 감지한다."""
-    h = hashlib.sha256()
-    try:
-        for p in sorted(config.UI_DIR.rglob("*")):
-            if p.is_file():
-                h.update(p.name.encode("utf-8"))
-                h.update(str(p.stat().st_mtime_ns).encode("ascii"))
-    except OSError:
-        return "unknown"
-    return h.hexdigest()[:12]
-
-
 def create_app() -> FastAPI:
     _register_mimetypes()
     config.ensure_dirs()
@@ -155,10 +141,6 @@ def create_app() -> FastAPI:
     @app.get("/health")
     def health() -> dict:
         return {"ok": True}
-
-    @app.get("/api/version")
-    def version() -> dict:
-        return {"ui": _ui_version()}
 
     @app.get("/")
     def index():

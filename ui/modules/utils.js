@@ -23,6 +23,50 @@ export function el(tag, attrs = {}, ...children) {
   return node;
 }
 
+/**
+ * 캔버스에 실시간 오디오 레벨을 막대로 그린다. 재생 확인용 — 소리가 실제로 흐르면
+ * 막대가 움직이고, 재생이 안 되고 있으면(엔진 문제) 평평하게 멈춰 있다.
+ * @param {string} canvasId
+ * @param {() => Uint8Array | null} getData 매 프레임 호출해 레벨을 얻는다 (audio.js#getLevels)
+ */
+export function createLevelVisualizer(canvasId, getData) {
+  let raf = null;
+  // ★ getComputedStyle() 은 초당 최대 60회 도는 루프에서 매 프레임 부를 만큼 싸지
+  //   않다 — start() 할 때 한 번만 읽고, 다음 stop()/start() 에서 다시 읽어
+  //   그 사이의 테마 전환을 반영한다.
+  let color = null;
+  function draw() {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || canvas.offsetParent === null) { raf = null; return; }
+    if (color === null) {
+      color = getComputedStyle(document.body).getPropertyValue("--focus").trim() || "#c0453f";
+    }
+    const data = getData();
+    const g = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+    g.clearRect(0, 0, w, h);
+    if (data) {
+      const barW = w / data.length;
+      g.fillStyle = color;
+      data.forEach((v, i) => {
+        const barH = Math.max(1, (v / 255) * h);
+        g.fillRect(i * barW, h - barH, Math.max(1, barW - 1), barH);
+      });
+    }
+    raf = requestAnimationFrame(draw);
+  }
+  return {
+    start() { if (!raf) draw(); },
+    stop() {
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
+      color = null;
+      const canvas = document.getElementById(canvasId);
+      canvas?.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    },
+  };
+}
+
 export const escapeHtml = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (m) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
@@ -87,7 +131,7 @@ export function toLocalISO(date = new Date()) {
   );
 }
 
-/** "14:05" — 예상 완료 시각 표시용. */
+/** "14:05" */
 export function fmtTimeKo(date) {
   const pad = (n) => String(n).padStart(2, "0");
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;

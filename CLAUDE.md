@@ -51,7 +51,7 @@ pomodoro/
 │       ├── stats.js            # 기록 화면 + SVG 차트 + 오프라인 큐
 │       ├── settings.js         # 설정 화면 + 세트 편집기
 │       ├── playlist.js         # 음악 화면 · 업로드 · 폴더 가져오기 · 크레딧
-│       ├── tasks.js            # 할 일 목록 · 활성 작업 · 예상 완료 시각
+│       ├── tasks.js            # 할 일 목록 · 활성 작업
 │       ├── search.js           # 음원 검색 (앨범 → 곡 선택)
 │       ├── notify.js           # 탭 제목 · 파비콘 · 알림 · Wake Lock
 │       └── shortcuts.js        # 전역 단축키
@@ -208,9 +208,11 @@ done_pomodoros = |{s ∈ sessions : phase=="focus" ∧ completed ∧ task_id == 
 ```
 
 §4.4 와 같은 이유다. 저장하면 세션 삭제·기록 초기화·오프라인 큐 재전송에서 조용히
-드리프트하고, 그 드리프트는 사용자가 매일 보는 숫자(2/4)가 틀리는 것이다.
-파생시키면 증가 엔드포인트가 아예 필요 없다 — `POST /api/stats/sessions` 에 `task_id` 를
-담는 것이 곧 증가이고, `client_id` upsert 가 이미 중복을 막는다.
+드리프트한다. 파생시키면 증가 엔드포인트가 아예 필요 없다 — `POST /api/stats/sessions` 에
+`task_id` 를 담는 것이 곧 증가이고, `client_id` upsert 가 이미 중복을 막는다.
+
+(프론트는 이 값을 더 이상 화면에 노출하지 않는다 — 체크박스와 혼동돼 "체크해도 안
+올라간다" 는 오해를 샀다. `est_pomodoros`/`done_pomodoros` 자체는 API 응답에 남아 있다.)
 
 **아카이브를 만들지 않는다.** "To Do Today" 만 만든다 — 전체 활동 목록은 태스크 매니저의
 일이다. 미완료는 자동 이월되고 완료 항목은 다음 날 목록에서 빠진다(파일에는 14일 남는다).
@@ -306,8 +308,11 @@ done_pomodoros = |{s ∈ sessions : phase=="focus" ∧ completed ∧ task_id == 
 for f in ui/main.js ui/boot.js ui/modules/*.js; do node --check "$f" || exit 1; done
 
 # 백엔드 단위
-.venv/Scripts/python.exe qa/test_stats.py       # 36 checks
+.venv/Scripts/python.exe qa/test_stats.py       # 54 checks
 .venv/Scripts/python.exe qa/test_settings.py    # 44 checks
+.venv/Scripts/python.exe qa/test_tasks.py       # 42 checks
+.venv/Scripts/python.exe qa/test_search.py      # 56 checks (네트워크 0건 — urlopen 모킹)
+.venv/Scripts/python.exe qa/test_terms.py       # 46 checks
 
 # 카탈로그 재생성 (네트워크 필요, 수 분 소요)
 .venv/Scripts/python.exe qa/build_catalog.py

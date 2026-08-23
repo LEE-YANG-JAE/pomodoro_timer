@@ -68,8 +68,6 @@ export const API = {
     request("/api/tasks/active", { method: "PUT", body: { task_id } }),
   clearCompletedTasks: (today) =>
     request("/api/tasks/clear-completed", { method: "POST", body: { confirm: true, today } }),
-  getInsights: (days = 7) =>
-    request(`/api/stats/insights?days=${days}&today=${localDateStr()}`),
 
   // 음원
   getTracks: () => request("/api/media/tracks"),

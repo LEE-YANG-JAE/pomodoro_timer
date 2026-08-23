@@ -8,7 +8,6 @@ import { loadTracks, pollDownloadStatus, renderCredits } from "./playlist.js";
 
 const details = new Map();     // identifier → 상세 (한 번 펼치면 다시 안 부른다)
 let inflight = null;
-let lastQuery = "";
 
 // ── 검색 ─────────────────────────────────────────────────────────────────────
 
@@ -19,7 +18,6 @@ async function runSearch(q, preset = null) {
   if (notice) notice.textContent = "찾는 중…";
   try {
     const res = await API.searchMedia(q, { preset, signal: inflight.signal });
-    lastQuery = q;
     renderResults(res);
   } catch (e) {
     if (e?.name === "AbortError") return;      // 뒤이은 검색이 취소한 것 — 조용히

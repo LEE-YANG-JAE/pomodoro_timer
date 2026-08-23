@@ -47,9 +47,14 @@ def auto_download_allowed() -> bool:
 
 # ── ready 스캔 ──────────────────────────────────────────────────────────────
 
-def is_ready(track_id: str) -> bool:
-    from . import playlists
-    t = playlists.resolve_track(track_id)          # 카탈로그 ∪ 사용자 트랙
+def is_ready(track_id: str, *, resolved: dict | None = None) -> bool:
+    """★ `resolved` 를 넘기면 재조회하지 않는다 — 호출측이 이미 트랙 dict 를
+    갖고 있는 루프(예: start_download())에서 트랙마다 조회를 두 번 하지 않게."""
+    if resolved is not None:
+        t = resolved
+    else:
+        from . import playlists
+        t = playlists.resolve_track(track_id)       # 카탈로그 ∪ 사용자 트랙
     if not t:
         return False
     base = (config.catalog_media_dir() if t.get("subdir", "catalog") == "catalog"
@@ -62,7 +67,7 @@ def is_ready(track_id: str) -> bool:
 
 
 def ready_count() -> int:
-    return sum(1 for t in catalog.tracks() if is_ready(t["id"]))
+    return sum(1 for t in catalog.tracks() if is_ready(t["id"], resolved=t))
 
 
 def sweep_stale_parts(max_age_days: int = 7) -> int:
@@ -270,7 +275,7 @@ def start_download(track_ids: list[str] | None = None, *, tier: str = "core") ->
                       if t and t.get("url")]
         else:
             wanted = catalog.tracks_by_tier(tier)
-        wanted = [t for t in wanted if not is_ready(t["id"])]
+        wanted = [t for t in wanted if not is_ready(t["id"], resolved=t)]
 
         if not wanted:
             _JOB = None

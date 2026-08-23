@@ -55,8 +55,7 @@ function ensureFavicon() {
 
 const PHASE_COLOR = {
   focus: "#e05252",
-  short_break: "#3f9e6a",
-  long_break: "#3d7fc1",
+  break: "#3f9e6a",
 };
 
 export function updateFavicon(progress, phase, status) {

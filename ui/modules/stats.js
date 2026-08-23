@@ -260,28 +260,29 @@ export function renderWeekChart(series) {
   }
 }
 
-let rollupDays = 1;
-
-/** 오늘의 세션 — 집계를 기억의 실마리로 바꾼다. */
-export async function loadSessionList() {
+/** 특정 날짜의 세션 — 집계를 기억의 실마리로 바꾼다. 기본은 오늘. */
+export async function loadSessionList(date = localDateStr()) {
   const host = $("#session-list");
   if (!host) return;
   let items = [];
   try {
-    const data = await API.getSessionsByDate(localDateStr(), 200);
+    const data = await API.getSessionsByDate(date, 200);
     items = data.items ?? [];
   } catch {
     items = [];
   }
+  const today = date === localDateStr();
+  const title = $("#session-title");
+  if (title) title.textContent = today ? "오늘의 세션" : `${fmtDateKo(date)}의 세션`;
   const empty = $("#session-empty");
-  if (empty) empty.hidden = items.length > 0;
+  if (empty) {
+    empty.hidden = items.length > 0;
+    empty.textContent = today ? "오늘 기록한 세션이 없습니다." : "이 날짜에 기록한 세션이 없습니다.";
+  }
 
   // ★ 로그는 append 순서다 — 최신이 위로 오게 뒤집는다.
   host.replaceChildren(...items.slice().reverse().map((s) => {
     const start = new Date(s.started_at);
-    const i = s.interruptions_internal ?? 0;
-    const e = s.interruptions_external ?? 0;
-    const ticks = "●".repeat(Math.min(i, 6)) + "▲".repeat(Math.min(e, 6));
     const parts = [
       fmtTimeKo(start),
       fmtDuration(s.actual_seconds ?? 0),
@@ -289,72 +290,32 @@ export async function loadSessionList() {
     ];
     return el("li", { class: `session-row${s.completed ? "" : " session-aborted"}` },
       el("span", { class: "session-main", text: parts.join(" · ") }),
-      ticks ? el("span", { class: "ticks", text: ticks, title: `내부 ${i}회 · 외부 ${e}회` }) : null,
       s.completed ? null : el("span", { class: "muted", text: "중단" }));
   }));
 }
 
-/** 작업별 롤업 + 주간 인사이트. */
-export async function loadInsights(days = rollupDays) {
-  rollupDays = days;
-  const body = $("#task-rollup-body");
-  const line = $("#weekly-insight");
-  let data = null;
-  try {
-    data = await API.getInsights(days);
-  } catch {
-    if (body) body.replaceChildren();
-    if (line) line.textContent = "";
-    return;
-  }
-
-  if (body) {
-    const rows = data.by_task ?? [];
-    const trs = rows.length
-      ? rows.map((b) =>
-          el("tr", {},
-            // ★ task_id 가 없는 세션도 반드시 보여준다 — 작업 없이 집중하는 건 합법이고
-            //   숨기면 합계가 맞지 않는다.
-            el("td", { text: b.task_name || "작업 없음" }),
-            el("td", { class: "num", text: `${b.pomodoro_count}회` }),
-            el("td", { class: "num", text: b.focus_seconds ? fmtDuration(b.focus_seconds) : "-" })))
-      : [el("tr", {}, el("td", { class: "muted", colspan: "3", text: "아직 작업 기록이 없습니다." }))];
-    body.replaceChildren(...trs);
-  }
-
-  if (line) {
-    const it = data.interruptions ?? {};
-    const bits = [];
-    if ((it.internal ?? 0) + (it.external ?? 0) + (it.unclassified ?? 0) > 0) {
-      const seg = [`내부 방해 ${it.internal ?? 0}회`, `외부 ${it.external ?? 0}회`];
-      // 업그레이드 이전 기록에 분류를 지어내지 않는다 — 있을 때만 말한다
-      if ((it.unclassified ?? 0) > 0) seg.push(`분류 없음 ${it.unclassified}회`);
-      bits.push(`이번 주 ${seg.join(" · ")}`);
-    }
-    const tt = state.tasks?.totals ?? {};
-    if ((tt.completed_est_total ?? 0) > 0) {
-      const ratio = (tt.completed_done_total ?? 0) / tt.completed_est_total;
-      bits.push(`예상 대비 실제 ${ratio.toFixed(1)}배`);
-    }
-    line.textContent = bits.join(" — ");
-  }
-}
-
+/** 달력에서 과거 날짜를 고르면 그 날의 세션 목록을 보여준다 (오늘 기점, 미래는 막는다). */
 export function initRecordsView() {
-  for (const btn of $$("[data-rollup]")) {
-    btn.addEventListener("click", () => {
-      for (const b of $$("[data-rollup]")) {
-        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
-      }
-      loadInsights(Number(btn.dataset.rollup));
+  const dateInput = $("#session-date");
+  if (dateInput) {
+    const today = localDateStr();
+    dateInput.max = today;
+    dateInput.value = today;
+    dateInput.addEventListener("change", () => {
+      loadSessionList(dateInput.value || today);
     });
   }
 }
 
+/** ★ 기록이 있는 날만 보여준다 — 0회인 날을 나열하면 그 자체가 잔소리다. */
 export function renderHistoryTable(series) {
   const body = $("#history-body");
   if (!body) return;
-  const rows = series.slice(-HISTORY_DAYS).slice().reverse();
+  const rows = series.slice(-HISTORY_DAYS).slice().reverse().filter((d) => d.pomodoro_count > 0);
+  if (!rows.length) {
+    body.replaceChildren(el("tr", {}, el("td", { class: "muted", colspan: "3", text: "최근 기록이 없습니다." })));
+    return;
+  }
   body.replaceChildren(...rows.map((d) =>
     el("tr", {},
       el("td", { text: fmtDateKo(d.date) }),

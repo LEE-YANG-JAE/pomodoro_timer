@@ -217,7 +217,6 @@
 |---|---|---|
 | GET | `/` | SPA |
 | GET | `/health` | `{"ok":true}` |
-| GET | `/api/version` | 프론트 자산 해시 |
 | GET | `/media/{subdir}/{file}` | **오디오 실파일 — HTTP Range 지원 (200 / 206 / 416)** |
 | GET | `/static/{path}` | UI 자산 (no-cache) |
 

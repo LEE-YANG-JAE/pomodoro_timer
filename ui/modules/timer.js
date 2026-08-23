@@ -110,8 +110,6 @@ export function saveTimer() {
     completedFocus: T.completedFocus,
     sessionId: T.sessionId,
     interruptions: T.interruptions,
-    interruptionsInternal: T.interruptionsInternal,
-    interruptionsExternal: T.interruptionsExternal,
     savedAt: Date.now(),
   });
 }
@@ -139,8 +137,6 @@ export function setPhase(phase, { autoStart = false, autoStarted = false, setInd
   T.phaseStartedAt = null;
   T.sessionId = null;
   T.interruptions = 0;
-  T.interruptionsInternal = 0;
-  T.interruptionsExternal = 0;
   T.warnedSoon = false;
   T.pendingGap = null;
   setStatus("idle");
@@ -178,8 +174,6 @@ function finishPhase({ endedAt = null, completed = true, actualMs = null } = {})
       completed,
       cycle_index: T.setIndex,
       interruptions: T.interruptions,
-      interruptions_internal: T.interruptionsInternal,
-      interruptions_external: T.interruptionsExternal,
       client_id: T.sessionId || uid("s"),
     };
     if (completed) T.completedFocus += 1;
@@ -271,38 +265,6 @@ export function extendPhase(seconds = 300) {
   return seconds;
 }
 
-/**
- * 사용자가 방해를 기록한다 (I = 내부, Shift+I = 외부).
- *
- * 집중이 돌고 있을 때만 의미가 있다. 한 키스트로크에 결정 0개여야 살아남는
- * 기능이라 대화상자를 띄우지 않는다.
- * @returns {"internal"|"external"|null}
- */
-export function addInterruption(kind) {
-  const T = state.timer;
-  if (T.phase !== "focus" || T.status !== "running") return null;
-  if (kind === "external") T.interruptionsExternal += 1;
-  else T.interruptionsInternal += 1;
-  saveTimer();
-  emit("timer:interruption", {
-    kind, internal: T.interruptionsInternal, external: T.interruptionsExternal,
-  });
-  return kind;
-}
-
-/** 되돌리기 — 잘못 눌렀을 때. */
-export function undoInterruption(kind) {
-  const T = state.timer;
-  if (kind === "external" && T.interruptionsExternal > 0) T.interruptionsExternal -= 1;
-  else if (kind !== "external" && T.interruptionsInternal > 0) T.interruptionsInternal -= 1;
-  else return false;
-  saveTimer();
-  emit("timer:interruption", {
-    kind, internal: T.interruptionsInternal, external: T.interruptionsExternal,
-  });
-  return true;
-}
-
 /** 남은 시간을 버리고 다음 구간으로. 집중 구간은 기록하지 않는다. */
 export function skipPhase() {
   const T = state.timer;
@@ -325,9 +287,9 @@ export function skipPhase() {
   }
   emit("timer:phase-end", { phase, next, session: null, lateMs: 0, completed: false });
   // ★ 건너뛰기는 이미 명시적 사용자 행동이다 — finishPhase() 의 "조용한 자동 시작을
-  //   막기 위한 유예(timer:hold)"는 여기선 필요 없다. 설정이 켜져 있으면 바로 시작한다.
-  const autoStart = shouldAutoStart(next);
-  setPhase(next, { autoStart, setIndex: nextSet });
+  //   막기 위한 유예(timer:hold)" 도, auto_start_focus/break 설정 자체도 여기선
+  //   필요 없다. 사용자가 방금 "다음으로 넘어가겠다"고 눌렀으니 항상 바로 시작한다.
+  setPhase(next, { autoStart: true, setIndex: nextSet });
   emit("timer:skipped", { phase, next });
 }
 
@@ -362,8 +324,6 @@ export function resetPhase() {
   T.phaseStartedAt = null;
   T.sessionId = null;
   T.interruptions = 0;
-  T.interruptionsInternal = 0;
-  T.interruptionsExternal = 0;
   T.warnedSoon = false;
   setStatus("idle");
   saveTimer();
@@ -525,8 +485,6 @@ export function restoreTimer() {
   const settingsMs = phaseSeconds(T.phase) * 1000;
   T.sessionId = saved.sessionId ?? null;
   T.interruptions = saved.interruptions ?? 0;
-  T.interruptionsInternal = saved.interruptionsInternal ?? 0;
-  T.interruptionsExternal = saved.interruptionsExternal ?? 0;
   T.phaseStartedAt = saved.phaseStartedAt ?? null;
 
   if (saved.status === "running" && typeof saved.endsAt === "number") {

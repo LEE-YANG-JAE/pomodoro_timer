@@ -45,7 +45,7 @@ def put_settings(patch: settings_mod.SettingsPatch) -> dict:
             setattr(merged, group, incoming)
     _assert_playlists_exist(merged)
 
-    current, changed = settings_mod.apply_patch(patch)
+    current, changed = settings_mod.apply_patch(patch, before)
 
     # ★ 하루 시작 시각이 바뀌면 기존 기록의 local_date 를 소급 재계산한다.
     #   동기로 처리해야 재계산 전/후 상태가 공존하지 않는다 (플랜 §4.4 참조).

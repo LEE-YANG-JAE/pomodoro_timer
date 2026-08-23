@@ -163,38 +163,23 @@ old_payload = {
 check("옛 페이로드 -> 200 (폐기되지 않는다)",
       c.post("/api/stats/sessions", json=old_payload).status_code == 200)
 
+# interruptions_internal/external 은 프론트가 더 이상 보내지 않지만(예전 수동 방해
+# 로깅 제거됨), extra="forbid" 인 오프라인 큐 페이로드가 여전히 이 필드를 포함할 수
+# 있으므로 서버는 받아 주되 저장하지 않는다 — 그 계약을 여기서 고정한다.
 new_payload = {**old_payload, "client_id": "new-1",
                "interruptions_internal": 3, "interruptions_external": 1,
                "task_id": "t-abc", "task_name": "논문"}
-check("새 페이로드 -> 200", c.post("/api/stats/sessions", json=new_payload).status_code == 200)
+check("옛 분류 필드를 보내도 200 (받되 무시)",
+      c.post("/api/stats/sessions", json=new_payload).status_code == 200)
 
 items = c.get("/api/stats/sessions", params={"limit": 500}).json()["items"]
 legacy = [s for s in items if s.get("client_id") == "legacy-1"][0]
 fresh = [s for s in items if s.get("client_id") == "new-1"][0]
-check("옛 레코드의 새 필드는 0", legacy["interruptions_internal"] == 0)
-check("새 레코드의 분류값 저장", fresh["interruptions_internal"] == 3 and fresh["interruptions_external"] == 1)
+check("방해 분류값은 저장하지 않는다",
+      "interruptions_internal" not in fresh and "interruptions_external" not in fresh)
 check("작업 필드 저장", fresh["task_id"] == "t-abc" and fresh["task_name"] == "논문")
-
-# ★ 옛 interruptions 는 자동 감지된 일시정지지 사용자가 분류한 값이 아니다.
-#   내부로 귀속하면 "이번 주 내부 21회" 가 지어낸 숫자가 된다.
-ins = c.get("/api/stats/insights", params={"days": 7, "today": "2026-08-22"}).json()
-check("옛 값은 미분류로 잡힌다", ins["interruptions"]["unclassified"] >= 2)
-check("내부로 새지 않는다", ins["interruptions"]["internal"] == 3)
-check("외부 집계", ins["interruptions"]["external"] == 1)
-
-print("== 작업별 롤업 ==")
-by_task = ins["by_task"]
-check("task_id 없는 세션도 버킷으로 나온다", any(b["task_id"] is None for b in by_task))
-check("작업 버킷이 있다", any(b["task_id"] == "t-abc" for b in by_task))
-named = [b for b in by_task if b["task_id"] == "t-abc"][0]
-check("이름이 붙는다", named["task_name"] == "논문")
-
-# 이름을 바꿔 재전송하면 가장 최근 이름을 쓴다
-c.post("/api/stats/sessions", json={**new_payload, "client_id": "new-2",
-                                    "task_name": "논문(수정)"})
-ins2 = c.get("/api/stats/insights", params={"days": 7, "today": "2026-08-22"}).json()
-named2 = [b for b in ins2["by_task"] if b["task_id"] == "t-abc"][0]
-check("가장 최근 task_name 을 쓴다", named2["task_name"] == "논문(수정)")
+check("/api/stats/insights 는 더 이상 없다 (작업별 롤업 화면 제거됨)",
+      c.get("/api/stats/insights", params={"days": 7}).status_code == 404)
 
 print("== CSV 내보내기 ==")
 r = c.get("/api/stats/export.csv")
@@ -207,6 +192,7 @@ check("UTF-8 BOM 으로 시작", body.startswith("\ufeff"))
 lines = [ln for ln in body.lstrip("\ufeff").split("\n") if ln.strip()]
 check("헤더 + 데이터 행", len(lines) >= 2)
 check("헤더에 task_name 포함", "task_name" in lines[0])
+check("방해 분류 컬럼은 더 이상 없다", "interruptions_internal" not in lines[0])
 check("한글이 살아 있다", "논문" in body)
 
 # 쉼표·따옴표가 든 작업명이 라운드트립되는가

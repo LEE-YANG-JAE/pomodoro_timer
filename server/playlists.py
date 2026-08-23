@@ -9,6 +9,7 @@ id 네임스페이스가 겹치지 않으므로 resolve_track() 이 둘을 합�
 """
 from __future__ import annotations
 
+import copy
 import re
 import uuid
 from pathlib import Path
@@ -20,6 +21,14 @@ TRACKS_VERSION = 1
 
 BUILTIN = ("focus", "break")
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
+
+# mtime 키 메모 — stats.py/_load() 와 같은 패턴. 읽기 전용 호출자는 캐시된 객체를
+# 그대로 받아 쓰고, 수정하는 호출자는 반드시 copy.deepcopy() 로 복사한 뒤 고친다
+# (원본을 그대로 고치면 아직 디스크에 쓰지 않은 상태가 캐시로 노출된다).
+_pl_cache: dict | None = None
+_pl_cache_mtime: float | None = None
+_tr_cache: list[dict] | None = None
+_tr_cache_mtime: float | None = None
 
 
 def _playlists_path() -> Path:
@@ -49,31 +58,59 @@ def _default_playlists() -> dict:
 
 
 def _read_playlists() -> dict:
-    doc = storage.read_json(_playlists_path(), default=None)
-    if not isinstance(doc, dict) or not isinstance(doc.get("playlists"), list):
+    global _pl_cache, _pl_cache_mtime
+    p = _playlists_path()
+    try:
+        mtime = p.stat().st_mtime
+    except OSError:
+        _pl_cache, _pl_cache_mtime = None, None
         return _default_playlists()
-    # builtin 두 개는 어떤 경우에도 존재해야 한다 (설정이 id 로 참조한다)
-    have = {p.get("id") for p in doc["playlists"]}
-    for pid, name in (("focus", "집중"), ("break", "휴식")):
-        if pid not in have:
-            doc["playlists"].append(
-                {"id": pid, "name_ko": name, "builtin": True, "track_ids": []}
-            )
+    if _pl_cache is not None and _pl_cache_mtime == mtime:
+        return _pl_cache
+
+    doc = storage.read_json(p, default=None)
+    if not isinstance(doc, dict) or not isinstance(doc.get("playlists"), list):
+        doc = _default_playlists()
+    else:
+        # builtin 두 개는 어떤 경우에도 존재해야 한다 (설정이 id 로 참조한다)
+        have = {pl.get("id") for pl in doc["playlists"]}
+        for pid, name in (("focus", "집중"), ("break", "휴식")):
+            if pid not in have:
+                doc["playlists"].append(
+                    {"id": pid, "name_ko": name, "builtin": True, "track_ids": []}
+                )
+    _pl_cache, _pl_cache_mtime = doc, mtime
     return doc
 
 
 def _write_playlists(doc: dict) -> None:
+    global _pl_cache, _pl_cache_mtime
     storage.atomic_write(_playlists_path(), doc)
+    _pl_cache, _pl_cache_mtime = None, None       # 다음 _read_playlists() 가 다시 읽도록
 
 
 def _read_user_tracks() -> list[dict]:
-    doc = storage.read_json(_tracks_path(), default=None)
+    global _tr_cache, _tr_cache_mtime
+    p = _tracks_path()
+    try:
+        mtime = p.stat().st_mtime
+    except OSError:
+        _tr_cache, _tr_cache_mtime = None, None
+        return []
+    if _tr_cache is not None and _tr_cache_mtime == mtime:
+        return _tr_cache
+
+    doc = storage.read_json(p, default=None)
     items = doc.get("tracks") if isinstance(doc, dict) else None
-    return items if isinstance(items, list) else []
+    items = items if isinstance(items, list) else []
+    _tr_cache, _tr_cache_mtime = items, mtime
+    return items
 
 
 def _write_user_tracks(items: list[dict]) -> None:
+    global _tr_cache, _tr_cache_mtime
     storage.atomic_write(_tracks_path(), {"version": TRACKS_VERSION, "tracks": items})
+    _tr_cache, _tr_cache_mtime = None, None
 
 
 def ensure_file() -> None:
@@ -92,7 +129,7 @@ def ensure_file() -> None:
 
     with storage._LOCK:
         exists = _playlists_path().exists()
-        doc = _read_playlists() if exists else _default_playlists()
+        doc = copy.deepcopy(_read_playlists()) if exists else _default_playlists()
         by_id = {p["id"]: p for p in doc["playlists"]}
         changed = not exists
 
@@ -207,22 +244,19 @@ def list_playlists() -> list[dict]:
 def get_playlist(pid: str) -> dict | None:
     for p in _read_playlists()["playlists"]:
         if p["id"] == pid:
-            tracks_detail = [
-                t for t in (resolve_track(i) for i in p.get("track_ids", [])) if t
-            ]
             by_id = {t["id"]: t for t in all_tracks()}
             return {
                 "id": p["id"],
                 "name_ko": p.get("name_ko", p["id"]),
                 "builtin": bool(p.get("builtin")),
-                "tracks": [by_id[t["id"]] for t in tracks_detail if t["id"] in by_id],
+                "tracks": [by_id[tid] for tid in p.get("track_ids", []) if tid in by_id],
             }
     return None
 
 
 def create_playlist(name_ko: str) -> dict:
     with storage._LOCK:
-        doc = _read_playlists()
+        doc = copy.deepcopy(_read_playlists())
         pid = f"pl-{uuid.uuid4().hex[:8]}"
         doc["playlists"].append(
             {"id": pid, "name_ko": name_ko, "builtin": False, "track_ids": []}
@@ -237,7 +271,7 @@ def update_playlist(
     """이름 변경 + 트랙 목록 교체(= 재정렬). 순서가 곧 배열 순서이므로
     재정렬 전용 엔드포인트를 따로 두지 않는다 — 코드 경로가 하나뿐이다."""
     with storage._LOCK:
-        doc = _read_playlists()
+        doc = copy.deepcopy(_read_playlists())
         for p in doc["playlists"]:
             if p["id"] != pid:
                 continue
@@ -262,7 +296,7 @@ def delete_playlist(pid: str) -> tuple[bool, str | None]:
     if pid in BUILTIN:
         return False, "기본 재생목록(집중/휴식)은 삭제할 수 없습니다. 이름은 바꿀 수 있습니다."
     with storage._LOCK:
-        doc = _read_playlists()
+        doc = copy.deepcopy(_read_playlists())
         before = len(doc["playlists"])
         doc["playlists"] = [p for p in doc["playlists"] if p["id"] != pid]
         if len(doc["playlists"]) == before:
@@ -273,7 +307,7 @@ def delete_playlist(pid: str) -> tuple[bool, str | None]:
 
 def add_tracks(pid: str, track_ids: list[str]) -> dict | None:
     with storage._LOCK:
-        doc = _read_playlists()
+        doc = copy.deepcopy(_read_playlists())
         for p in doc["playlists"]:
             if p["id"] != pid:
                 continue
@@ -289,7 +323,7 @@ def add_tracks(pid: str, track_ids: list[str]) -> dict | None:
 
 def remove_track(pid: str, track_id: str) -> dict | None:
     with storage._LOCK:
-        doc = _read_playlists()
+        doc = copy.deepcopy(_read_playlists())
         for p in doc["playlists"]:
             if p["id"] != pid:
                 continue
@@ -303,7 +337,7 @@ def remove_track(pid: str, track_id: str) -> dict | None:
 
 def register_user_track(entry: dict) -> dict:
     with storage._LOCK:
-        items = _read_user_tracks()
+        items = list(_read_user_tracks())
         items.append(entry)
         _write_user_tracks(items)
     return entry
@@ -312,7 +346,7 @@ def register_user_track(entry: dict) -> dict:
 def register_user_tracks(entries: list[dict]) -> list[dict]:
     """여러 건을 락 한 번으로 등록. 검색 추가는 항상 배치다."""
     with storage._LOCK:
-        items = _read_user_tracks()
+        items = list(_read_user_tracks())
         items.extend(entries)
         _write_user_tracks(items)
     return entries
@@ -364,7 +398,7 @@ def patch_track(track_id: str, patch: dict) -> dict | None:
     사용자 트랙만 수정 가능하다."""
     allowed = {"title_ko", "composer_ko", "performer_ko", "duration_seconds"}
     with storage._LOCK:
-        items = _read_user_tracks()
+        items = copy.deepcopy(_read_user_tracks())
         for t in items:
             if t.get("id") != track_id:
                 continue
@@ -397,7 +431,7 @@ def delete_track(track_id: str) -> tuple[bool, list[str]]:
 
         _write_user_tracks([t for t in items if t.get("id") != track_id])
 
-        doc = _read_playlists()
+        doc = copy.deepcopy(_read_playlists())
         for p in doc["playlists"]:
             ids = p.get("track_ids", [])
             if track_id in ids:

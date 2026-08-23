@@ -195,9 +195,15 @@ def save(current: Settings) -> Settings:
     return current
 
 
-def apply_patch(patch: SettingsPatch) -> tuple[Settings, list[str]]:
-    """변경된 그룹만 통째로 갈아끼운다. (설정, 바뀐 그룹 이름 목록) 반환."""
-    current = load()
+def apply_patch(patch: SettingsPatch, current: Settings | None = None) -> tuple[Settings, list[str]]:
+    """변경된 그룹만 통째로 갈아끼운다. (설정, 바뀐 그룹 이름 목록) 반환.
+
+    ★ `current` 를 넘기면 다시 읽지 않는다 — 호출측(PUT /api/settings)이 검증을 위해
+    이미 한 번 load() 했을 때 파일을 두 번 읽지 않게 하려고."""
+    if current is None:
+        current = load()
+    else:
+        current = current.model_copy(deep=True)
     changed: list[str] = []
     for group in ("timer", "audio", "records", "ui", "media"):
         incoming = getattr(patch, group)

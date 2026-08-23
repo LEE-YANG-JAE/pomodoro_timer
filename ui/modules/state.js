@@ -79,10 +79,8 @@ export const state = {
     setIndex: 0,            // 현재 진행 중인 세트 번호 (0부터)
     completedFocus: 0,      // 이번 실행에서 완료한 집중 구간 수
     sessionId: null,        // 클라이언트 생성 멱등키
-    interruptions: 0,
+    interruptions: 0,       // 절전 등으로 자동 감지된 중단 횟수 (일시정지·복구 포함)
     lastTickAt: 0,          // 갭 감지용
-    interruptionsInternal: 0,   // 사용자가 I 로 기록
-    interruptionsExternal: 0,   // 사용자가 Shift+I 로 기록
     warnedSoon: false,          // 종료 30초 전 예고를 이미 했는가
     pendingGap: null,       // { gapMs, phase, endsAt, plannedMs, startedAt }
     lastSkipped: null,      // 되돌리기용 스냅샷

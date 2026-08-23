@@ -46,15 +46,6 @@
 
     <p id="cycle-dots" class="cycle-dots" aria-label="세트 진행 상황"></p>
 
-    <!-- 방해 기록 — 집중이 돌고 있을 때만 보인다. 한 키에 한 번, 대화상자 없음. -->
-    <div id="interrupt-bar" class="interrupt-bar" hidden>
-      <button id="btn-int-internal" class="tick-btn" type="button"
-              aria-label="내부 방해 기록 (I)">＋ 내부</button>
-      <button id="btn-int-external" class="tick-btn" type="button"
-              aria-label="외부 방해 기록 (Shift+I)">＋ 외부</button>
-      <span id="interruption-ticks" class="ticks"></span>
-    </div>
-
     <!-- 휴식 시작 유예 — 자동 시작이 켜져 있어도 잠깐 붙잡는다 (휴식 침식 방지) -->
     <div id="hold-bar" class="hold-bar" role="status" hidden>
       <span id="hold-label"></span>
@@ -82,7 +73,6 @@
     <section id="task-panel" class="task-panel" aria-labelledby="task-panel-title">
       <div class="task-head">
         <h2 id="task-panel-title" class="section-title">오늘 할 일</h2>
-        <span id="task-projection" class="task-projection"></span>
       </div>
 
       <ol id="task-list" class="task-list"></ol>
@@ -90,8 +80,6 @@
       <form id="task-add" class="task-add" autocomplete="off">
         <input id="task-name" class="task-name-input" type="text" maxlength="120"
                placeholder="할 일 추가 (선택)" aria-label="할 일 이름">
-        <input id="task-est" class="task-est-input" type="number" min="1" max="40"
-               step="1" value="1" aria-label="예상 뽀모도로 개수">
         <button class="btn btn-small" type="submit">추가</button>
       </form>
 
@@ -108,6 +96,7 @@
       <button id="btn-next-track" class="icon-btn" type="button" aria-label="다음 곡 (N)">⏭</button>
       <button id="btn-shuffle" class="icon-btn" type="button" aria-pressed="false"
               aria-label="재생 순서 바꾸기 (O)" title="순서대로 / 무작위">🔁</button>
+      <canvas id="tv-visualizer" class="level-viz" width="40" height="22" aria-hidden="true"></canvas>
       <span id="now-playing" class="now-playing">재생 중인 곡 없음</span>
       <button id="btn-mute" class="icon-btn" type="button" aria-pressed="false" aria-label="음소거 (M)">🔊</button>
       <input id="music-volume" class="volume" type="range" min="0" max="100" step="1"
@@ -165,21 +154,12 @@
       <div class="goal-bar"><div id="goal-bar-fill" class="goal-bar-fill"></div></div>
     </div>
 
-    <h2 class="section-title">오늘의 세션</h2>
+    <div class="task-head">
+      <h2 id="session-title" class="section-title">오늘의 세션</h2>
+      <input id="session-date" class="date-input" type="date" aria-label="날짜 선택">
+    </div>
     <ol id="session-list" class="session-list"></ol>
     <p id="session-empty" class="muted" hidden>오늘 기록한 세션이 없습니다.</p>
-
-    <h2 class="section-title">작업별</h2>
-    <div class="filters" role="group" aria-label="기간">
-      <button class="btn btn-small" type="button" data-rollup="1" aria-pressed="true">오늘</button>
-      <button class="btn btn-small" type="button" data-rollup="7" aria-pressed="false">이번 주</button>
-    </div>
-    <table class="history">
-      <thead><tr><th scope="col">작업</th><th scope="col" class="num">뽀모도로</th>
-                 <th scope="col" class="num">집중 시간</th></tr></thead>
-      <tbody id="task-rollup-body"></tbody>
-    </table>
-    <p id="weekly-insight" class="insight muted"></p>
 
     <h2 class="section-title">최근 7일</h2>
     <svg id="week-chart" class="week-chart" viewBox="0 0 320 132" aria-hidden="true"></svg>
@@ -234,6 +214,12 @@
       <button class="btn btn-small" type="button" data-filter="all" aria-pressed="true">전체</button>
       <button class="btn btn-small" type="button" data-filter="focus" aria-pressed="false">집중</button>
       <button class="btn btn-small" type="button" data-filter="break" aria-pressed="false">휴식</button>
+    </div>
+
+    <div id="pl-now-bar" class="now-playing-bar" hidden>
+      <canvas id="pl-visualizer" class="level-viz" width="140" height="28" aria-hidden="true"></canvas>
+      <span id="pl-now-title" class="now-playing-title"></span>
+      <button id="btn-pl-stop" class="btn btn-small" type="button" aria-label="음악 정지">정지</button>
     </div>
 
     <div id="track-list" class="track-list"></div>

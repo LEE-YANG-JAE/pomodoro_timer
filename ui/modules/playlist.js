@@ -2,11 +2,20 @@
 
 import { API } from "./api.js";
 import { state } from "./state.js";
-import { $, $$, confirmModal, el, fmtDuration, showToast } from "./utils.js";
-import { playTrackById, rebuildOrder } from "./audio.js";
+import { $, $$, confirmModal, createLevelVisualizer, el, fmtDuration, showToast } from "./utils.js";
+import { getLevels, playTrackById, rebuildOrder, stopMusic } from "./audio.js";
 
 let pollTimer = null;
 let currentFilter = "all";   // all | focus | break
+let lastPlayingId = null;    // updateNowPlayingRow() 의 이전 프레임 대비용
+const nowPlayingViz = createLevelVisualizer("pl-visualizer", getLevels);
+
+/** 행의 재생 상태를 나타내는 안내문. 전체 렌더와 부분 갱신이 같은 문구를 쓰게 공유한다. */
+function trackMeta(t, playing) {
+  return [playing ? "재생 중 · 다시 누르면 정지" : null, t.performer_ko,
+          t.duration_seconds ? fmtDuration(t.duration_seconds) : null,
+          t.ready ? null : "내려받는 중"].filter(Boolean).join(" · ");
+}
 
 // ── 로드 ─────────────────────────────────────────────────────────────────────
 
@@ -182,10 +191,13 @@ export async function startDownload(tier = "core") {
 // ── 렌더 ─────────────────────────────────────────────────────────────────────
 
 export function renderNowPlayingMini() {
-  const node = $("#pl-now");
-  if (!node) return;
+  const bar = $("#pl-now-bar");
+  if (!bar) return;
   const t = state.audio.current;
-  node.textContent = t ? `재생 중: ${t.title_ko}` : "";
+  bar.hidden = !t;
+  const title = $("#pl-now-title");
+  if (title) title.textContent = t ? (t.title_ko ?? t.title_orig ?? t.id) : "";
+  if (t) nowPlayingViz.start(); else nowPlayingViz.stop();
 }
 
 export function renderPlaylistView() {
@@ -220,22 +232,27 @@ export function renderPlaylistView() {
     const playing = state.audio.current?.id === t.id;
     return el("div", {
       class: `track-row${t.ready ? "" : " track-pending"}${playing ? " track-playing" : ""}`,
+      "data-track-id": t.id,
     },
-      // 제목을 누르면 그 곡을 바로 재생한다
+      // 제목을 누르면 그 곡을 바로 재생한다. 재생 중인 곡을 다시 누르면 멈춘다.
+      // ★ 클릭 시점에 state.audio.current 를 다시 확인한다 — updateNowPlayingRow() 가
+      //   행을 다시 그리지 않고 넘어간 뒤에도 이 클로저의 "playing" 이 낡지 않게.
       el("button", {
         class: "track-main", type: "button", disabled: !t.ready,
-        "aria-label": `${t.title_ko} 재생`,
+        "aria-label": playing ? `${t.title_ko} 정지` : `${t.title_ko} 재생`,
         onclick: async () => {
+          if (state.audio.current?.id === t.id) {
+            stopMusic();
+            renderPlaylistView();
+            return;
+          }
           const ok = await playTrackById(t.id);
           if (!ok) showToast("이 곡을 재생할 수 없습니다.", { kind: "warn" });
           renderPlaylistView();
         },
       },
         el("div", { class: "track-title", text: t.title_ko ?? t.title_orig ?? t.id }),
-        el("div", { class: "track-meta", text:
-          [playing ? "재생 중" : null, t.performer_ko,
-           t.duration_seconds ? fmtDuration(t.duration_seconds) : null,
-           t.ready ? null : "내려받는 중"].filter(Boolean).join(" · ") })),
+        el("div", { class: "track-meta", text: trackMeta(t, playing) })),
       el("label", { class: "track-assign" },
         el("input", {
           type: "checkbox", checked: focusOn,
@@ -266,6 +283,34 @@ export function renderPlaylistView() {
           onclick: () => deleteTrack(t.id),
         }, "✕")));
   }));
+  lastPlayingId = state.audio.current?.id ?? null;   // 부분 갱신의 다음 비교 기준선
+}
+
+/**
+ * 곡이 바뀔 때 목록 전체를 다시 그리지 않고, 이전/새 재생 행 딱 둘만 갱신한다.
+ * ★ 79곡짜리 목록을 통째로 replaceChildren() 하는 대신 쓴다 — renderPlaylistView() 는
+ *   필터를 바꾸거나 배정/순서가 실제로 바뀔 때만 부른다.
+ */
+export function updateNowPlayingRow() {
+  const body = $("#track-list");
+  if (!body) return;
+  const nextId = state.audio.current?.id ?? null;
+  if (nextId === lastPlayingId) return;
+
+  const patch = (id, playing) => {
+    if (id == null) return;
+    const row = body.querySelector(`[data-track-id="${id}"]`);
+    const t = state.tracks.find((x) => x.id === id);
+    if (!row || !t) return;
+    row.classList.toggle("track-playing", playing);
+    const btn = row.querySelector(".track-main");
+    if (btn) btn.setAttribute("aria-label", playing ? `${t.title_ko} 정지` : `${t.title_ko} 재생`);
+    const meta = row.querySelector(".track-meta");
+    if (meta) meta.textContent = trackMeta(t, playing);
+  };
+  patch(lastPlayingId, false);
+  patch(nextId, true);
+  lastPlayingId = nextId;
 }
 
 // ── 크레딧 ───────────────────────────────────────────────────────────────────
@@ -327,6 +372,16 @@ export function initPlaylistView() {
     pollDownloadStatus();
   });
   $("#btn-import-folder")?.addEventListener("click", openFolderPicker);
+
+  $("#btn-pl-stop")?.addEventListener("click", () => {
+    stopMusic();
+    renderPlaylistView();
+  });
+  // 탭을 나갔다 오면 requestAnimationFrame 루프가 꺼져 있으므로 다시 켠다
+  // (drawVisualizer 는 캔버스가 안 보이면 스스로 멈춘다).
+  document.addEventListener("view:changed", (e) => {
+    if (e.detail.view === "music" && state.audio.current) nowPlayingViz.start();
+  });
 }
 
 // ── 폴더 가져오기 ────────────────────────────────────────────────────────────
