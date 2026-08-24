@@ -147,7 +147,9 @@ function renderExtendButton() {
 function renderPlayerControls() {
   const pause = $("#btn-music-toggle");
   if (pause) {
-    const paused = isMusicPaused();
+    // 다운로드 중이라 재생목록이 비어 재생이 시작 못 했을 때도 "일시정지" 로 보이면
+    // 안 된다 — userPaused 뿐 아니라 실제로 재생 중인 트랙이 있는지도 함께 본다.
+    const paused = isMusicPaused() || !state.audio.current;
     pause.textContent = paused ? "▶" : "⏸";
     pause.setAttribute("aria-pressed", paused ? "true" : "false");
     pause.setAttribute("aria-label", paused ? "음악 재생 (P)" : "음악 일시정지 (P)");

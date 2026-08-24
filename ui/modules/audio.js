@@ -92,7 +92,7 @@ export async function ensureAudio() {
     // ★ 재생 확인용 — 실제로 소리가 나는지 눈으로 볼 수 있게 마스터 출력을 엿듣는다.
     //   destination 과 별도 탭이라 오디오 그래프 자체에는 영향이 없다.
     analyser = ctx.createAnalyser();
-    analyser.fftSize = 64;
+    analyser.fftSize = 512;
     analyser.smoothingTimeConstant = 0.75;
     master.connect(analyser);
 
@@ -152,15 +152,46 @@ export function getContext() {
 // 시각화 루프가 초당 최대 60번 부른다 — 프레임마다 새 배열을 할당하지 않는다.
 // 항상 그 자리에서 즉시 소비되고(호출자가 그리자마자 버림) 다음 프레임에 덮어써지므로
 // 여러 시각화 인스턴스가 공유해도 안전하다.
+const VIS_BARS = 24;
+// 노이즈 버스에 로우패스가 걸려 있고(noise.js) 음악도 고음역 에너지가 크지 않아,
+// 나이퀴스트(~22kHz)까지 그대로 로그 분배하면 뒤쪽 막대가 늘 0으로 죽는다.
+// 실제로 신호가 있는 대역만 잘라 그 안에서 로그 분배해야 막대 전체가 움직인다.
+const VIS_MAX_HZ = 6000;
+let rawLevelsBuf = null;
 let levelsBuf = null;
+let binEdges = null;
 
-/** 마스터 출력의 주파수 대역 세기(0~255). 소리가 실제로 나는지 시각적으로 확인하는 용도. */
+// FFT bin 은 선형으로 퍼지는데, 에너지는 저음역에 몰려 있어 그대로 그리면 막대 몇 개
+// (왼쪽)만 움직인다. 사람 귀의 주파수 인지처럼 로그 스케일로 bin 을 묶는다.
+function computeBinEdges(rawBinCount) {
+  const hzPerBin = ctx.sampleRate / analyser.fftSize;
+  const maxBin = Math.min(rawBinCount, Math.max(VIS_BARS, Math.round(VIS_MAX_HZ / hzPerBin)));
+  const edges = new Array(VIS_BARS + 1);
+  for (let i = 0; i <= VIS_BARS; i += 1) {
+    edges[i] = Math.floor(Math.pow(maxBin, i / VIS_BARS));
+  }
+  return edges;
+}
+
+/** 마스터 출력의 주파수 대역 세기(0~255), 로그 스케일 막대 VIS_BARS 개로 묶음. */
 export function getLevels() {
   if (!analyser) return null;
-  if (!levelsBuf || levelsBuf.length !== analyser.frequencyBinCount) {
-    levelsBuf = new Uint8Array(analyser.frequencyBinCount);
+  const rawBinCount = analyser.frequencyBinCount;
+  if (!rawLevelsBuf || rawLevelsBuf.length !== rawBinCount) {
+    rawLevelsBuf = new Uint8Array(rawBinCount);
+    binEdges = computeBinEdges(rawBinCount);
+    levelsBuf = new Uint8Array(VIS_BARS);
   }
-  analyser.getByteFrequencyData(levelsBuf);
+  analyser.getByteFrequencyData(rawLevelsBuf);
+  for (let i = 0; i < VIS_BARS; i += 1) {
+    const start = Math.max(1, binEdges[i]); // bin 0 은 DC 성분 — 건너뛴다
+    const end = Math.max(start + 1, binEdges[i + 1]);
+    let max = 0;
+    for (let b = start; b < end && b < rawBinCount; b += 1) {
+      if (rawLevelsBuf[b] > max) max = rawLevelsBuf[b];
+    }
+    levelsBuf[i] = max;
+  }
   return levelsBuf;
 }
 
@@ -449,10 +480,15 @@ export async function playTrackById(trackId, { fadeSec = 0.4 } = {}) {
  *   playPlaylist() 가 다시 재생을 시작해 사용자의 선택이 무시된다.
  */
 export async function toggleMusicPause() {
-  if (state.audio.userPaused) {
+  if (!state.audio.current) {
+    // 재생 중인 트랙이 없다 — 다운로드가 덜 끝나 재생목록이 비어 있던 동안 자동재생이
+    // 조용히 넘어갔을 수 있다. userPaused 는 false 라 "재생 중" 아이콘이 떠 있지만
+    // 실제로는 아무것도 안 나오므로, 이 클릭은 "멈춰라" 가 아니라 "재생해라" 다.
     state.audio.userPaused = false;
-    if (!state.audio.current) await playPlaylist(state.timer.phase);
-    else await resumeMusic();
+    await playPlaylist(state.timer.phase, { force: true });
+  } else if (state.audio.userPaused) {
+    state.audio.userPaused = false;
+    await resumeMusic();
   } else {
     state.audio.userPaused = true;
     pauseMusic();
