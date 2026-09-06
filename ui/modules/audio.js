@@ -234,21 +234,32 @@ function shuffled(arr) {
   return out;
 }
 
-/** 재생목록 → 실제 재생 가능한(ready) 트랙 id 순서를 만든다. */
+/**
+ * 재생목록 → 실제 재생 가능한(ready) 트랙 id 순서를 만든다.
+ *
+ * ★ 체크박스는 "이것만 틀어라" 가 아니라 "이걸 먼저 틀어라" 다 — 준비된 곡은
+ *   체크 여부와 무관하게 전부 이 목록에 들어간다. 체크된 곡은 앞쪽에 우선 배치되고
+ *   (셔플이어도 그 우선순위는 유지된다), 나머지가 뒤따른다. 그래서 몇 곡을 체크하든
+ *   집중/휴식 각각 "재생 가능한 전체 곡" 이 결국 다 돌아간다 — 체크는 그중 무엇을
+ *   먼저·자주 마주치게 할지 정하는 우선순위일 뿐이다.
+ */
 export function rebuildOrder(key, { keepIfSame = false } = {}) {
   const pid = playlistIdFor(key);
   const pl = state.playlists.find((p) => p.id === pid);
-  const readyIds = new Set(state.tracks.filter((t) => t.ready).map((t) => t.id));
-  // ★ 아무것도 체크 안 한 게 기본값이다 — 그게 "아무것도 재생하지 마라" 가 되면 안 된다.
-  //   집중/휴식 목록이 비어 있으면(=아직 아무도 고르지 않았으면) 재생 가능한 전체 곡을
-  //   쓴다. 체크박스는 사용자가 실제로 뭔가를 골랐을 때만 그걸로 좁히는 필터다.
-  const chosen = pl?.track_ids ?? [];
-  const pool = chosen.length ? chosen : Array.from(readyIds);
-  let ids = pool.filter((id) => readyIds.has(id) && !state.audio.failed.has(id));
+  const readyIds = state.tracks
+    .filter((t) => t.ready && !state.audio.failed.has(t.id))
+    .map((t) => t.id);
+  const chosen = new Set(pl?.track_ids ?? []);
 
   const shuffle =
     key === "focus" ? state.settings.audio.shuffle_focus : state.settings.audio.shuffle_break;
-  if (shuffle) ids = shuffled(ids);
+  let picked = readyIds.filter((id) => chosen.has(id));
+  let rest = readyIds.filter((id) => !chosen.has(id));
+  if (shuffle) {
+    picked = shuffled(picked);
+    rest = shuffled(rest);
+  }
+  let ids = [...picked, ...rest];
 
   // 복원된 순서가 같은 곡 집합이면 그대로 둔다 — 새로고침 때마다 셔플이 다시
   // 섞이면 "이어듣기" 가 아니라 매번 새 재생이 된다.

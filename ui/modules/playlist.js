@@ -212,21 +212,24 @@ export function renderPlaylistView() {
   const summary = $("#track-summary");
   if (summary) {
     const ready = state.tracks.filter((t) => t.ready).length;
-    // ★ 아무것도 체크 안 했으면(count 0) 재생은 전체 재생 가능 곡에서 돈다
-    //   (audio.js#rebuildOrder) — 여기 숫자도 그와 맞춰 "0곡" 이라고 거짓말하지 않는다.
-    const focusN = playlistOf("focus");
-    const breakN = playlistOf("break");
-    const focusCount = focusN?.count ? focusN.ready_count : ready;
-    const breakCount = breakN?.count ? breakN.ready_count : ready;
+    // ★ 체크는 필터가 아니라 우선순위다(audio.js#rebuildOrder) — 몇 곡을 체크하든
+    //   집중·휴식 둘 다 재생 가능한 전체 곡이 결국 다 돌아간다. 그래서 "집중 N곡" 처럼
+    //   재생될 곡 수인 것처럼 보이는 문구 대신, 우선순위로 찍힌 곡 수라고 분명히 말한다.
+    const focusPicked = playlistOf("focus")?.count ?? 0;
+    const breakPicked = playlistOf("break")?.count ?? 0;
+    const picks = [];
+    if (focusPicked) picks.push(`집중 우선 ${focusPicked}곡`);
+    if (breakPicked) picks.push(`휴식 우선 ${breakPicked}곡`);
     summary.textContent =
-      `전체 ${state.tracks.length}곡 · 재생 가능 ${ready}곡 · ` +
-      `집중 ${focusCount}곡 · 휴식 ${breakCount}곡`;
+      `전체 ${state.tracks.length}곡 · 재생 가능 ${ready}곡 (둘 다 전체에서 재생)` +
+      (picks.length ? ` · ${picks.join(" · ")}` : "");
   }
 
   if (!rows.length) {
     body.replaceChildren(el("p", { class: "empty" },
       state.tracks.length
-        ? "이 목록에 담긴 곡이 없습니다. 아래 표에서 집중/휴식에 체크해 주세요."
+        ? "아직 우선순위로 찍은 곡이 없습니다 — 그래도 재생은 전체 곡에서 돕니다. " +
+          "특정 곡을 먼저·자주 듣고 싶으면 아래 표에서 집중/휴식에 체크해 주세요."
         : "아직 음원이 없습니다. 내려받거나 직접 추가해 주세요. 음악이 없어도 타이머는 정상 동작합니다."));
     return;
   }
@@ -263,13 +266,13 @@ export function renderPlaylistView() {
         el("input", {
           type: "checkbox", checked: focusOn,
           onchange: (e) => assignTrack(t.id, "focus", e.target.checked),
-          "aria-label": `${t.title_ko} 집중 목록에 넣기`,
+          "aria-label": `${t.title_ko} 집중에서 우선 재생`,
         }), "집중"),
       el("label", { class: "track-assign" },
         el("input", {
           type: "checkbox", checked: breakOn,
           onchange: (e) => assignTrack(t.id, "break", e.target.checked),
-          "aria-label": `${t.title_ko} 휴식 목록에 넣기`,
+          "aria-label": `${t.title_ko} 휴식에서 우선 재생`,
         }), "휴식"),
       el("div", { class: "track-actions" },
         el("button", {
