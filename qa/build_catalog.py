@@ -63,7 +63,7 @@ SOURCES = [
         "composer_ko": "요한 제바스티안 바흐",
         "playlist": "focus",
         "tier": "core",
-        "limit": 12,
+        "limit": 24,              # 1권의 전주곡 24개 전부 (실측: 정확히 24개 있다)
         "pick": r"prelude",       # 전주곡만 — 푸가는 성부가 많아 더 주의를 끈다
     },
     {
@@ -76,7 +76,7 @@ SOURCES = [
         "composer_ko": "요한 제바스티안 바흐",
         "playlist": "focus",
         "tier": "core",
-        "limit": 8,
+        "limit": 32,              # 아리아 + 변주 30개 + 아리아 다카포 전부 (실측: 정확히 32개)
     },
     {
         "kind": "ia",
@@ -88,7 +88,7 @@ SOURCES = [
         "composer_ko": "프레데리크 쇼팽",
         "playlist": "focus",
         "tier": "extra",
-        "limit": 14,
+        "limit": 40,              # 실측: 104곡 중 알파벳순 40곡 (전곡은 카탈로그가 과하게 커진다)
     },
     {
         "kind": "ia",
@@ -100,7 +100,7 @@ SOURCES = [
         "composer_ko": "요한 제바스티안 바흐",
         "playlist": "focus",
         "tier": "extra",
-        "limit": 10,
+        "limit": 20,              # 실측: 이 녹음에 있는 전체 콘트라풍투스 수(20개)
     },
     # ── 휴식: 미군 군악대 (미국 정부 저작물 = 완전 퍼블릭 도메인) ───────────
     # 관현악 왈츠·행진곡풍이라 솔로 피아노 바흐와 편성·기분이 확연히 대비된다.
@@ -115,8 +115,14 @@ SOURCES = [
         "composer_ko": None,
         "playlist": "break",
         "tier": "core",
-        "limit": 8,
+        "limit": 10,
         "max_bytes": 12_000_000,
+        # ★ "Singing Sergeants"(공식 합창단)·"Men's Chorus" 등 성악 앙상블 이름이
+        #   파일명에 그대로 박혀 있다 — 오페라 아리아·캐럴처럼 실제로 노래하는 트랙이
+        #   전부 여기 걸린다("Votre Toast from Carmen", "'Twas in the Moon of
+        #   Wintertime" 등). "(vocal)" 명시 트랙과 크리스마스 메들리도 함께 뺀다.
+        #   "Concert Band"/"Ceremonial Brass"/"Airmen of Note" 는 기악 편성이라 안 걸린다.
+        "reject": r"Singing Sergeants|\(vocal\)|Christmas Time is Here|Chorus|Chorale|Choir",
     },
     {
         "kind": "commons",
@@ -130,6 +136,7 @@ SOURCES = [
         "tier": "core",
         "limit": 10,
         "max_bytes": 12_000_000,
+        "reject": r"Singing Sergeants|\(vocal\)|Chorus|Chorale|Choir",
     },
     {
         "kind": "commons",
@@ -142,6 +149,7 @@ SOURCES = [
         "playlist": "break",
         "tier": "extra",
         "limit": 16,
+        "reject": r"Sea Chanters|\(vocal\)|Chorus|Chorale|Choir",
     },
 ]
 
@@ -286,11 +294,14 @@ def resolve_commons(src: dict) -> tuple[dict, list[dict]] | None:
         "iiprop": "url|size|sha1|mime|extmetadata",
     }
 
+    reject = re.compile(src["reject"], re.I) if src.get("reject") else None
+
     tracks: list[dict] = []
     seen_license = None
     rejected: dict[str, int] = collections.Counter()
     non_mp3 = 0
     oversized = 0
+    vocal = 0
     cont: dict[str, str] = {}
     n = 0
 
@@ -305,6 +316,13 @@ def resolve_commons(src: dict) -> tuple[dict, list[dict]] | None:
                 break
             infos = page.get("imageinfo") or []
             if not infos:
+                continue
+            # ★ 노래(가사가 있는) 트랙 배제. Wikimedia 파일명에 연주 단체가 그대로
+            #   박혀 있어 이걸로 가른다 — "Singing Sergeants" 는 미 공군 군악대의
+            #   합창단이라 그 이름이 붙은 파일은 전부 실제로 노래를 부른다.
+            #   (오페라 아리아·크리스마스 캐럴이 여기 다 걸린다.)
+            if reject and reject.search(page.get("title", "")):
+                vocal += 1
                 continue
             info = infos[0]
             # ★ Wikimedia 는 url 뒤에 UTM 추적 파라미터를 붙인다
@@ -366,9 +384,13 @@ def resolve_commons(src: dict) -> tuple[dict, list[dict]] | None:
             print(f"      MP3 아님/크기 0: {non_mp3}개")
         if oversized:
             print(f"      용량 초과: {oversized}개")
+        if vocal:
+            print(f"      가사 있는(합창단) 트랙 배제: {vocal}개")
         return None
     if rejected:
         print(f"    . 라이선스로 거부 {sum(rejected.values())}개")
+    if vocal:
+        print(f"    . 가사 있는(합창단) 트랙 배제 {vocal}개")
 
     source = {
         "source_id": src["source_id"],

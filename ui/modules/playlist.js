@@ -212,9 +212,15 @@ export function renderPlaylistView() {
   const summary = $("#track-summary");
   if (summary) {
     const ready = state.tracks.filter((t) => t.ready).length;
+    // ★ 아무것도 체크 안 했으면(count 0) 재생은 전체 재생 가능 곡에서 돈다
+    //   (audio.js#rebuildOrder) — 여기 숫자도 그와 맞춰 "0곡" 이라고 거짓말하지 않는다.
+    const focusN = playlistOf("focus");
+    const breakN = playlistOf("break");
+    const focusCount = focusN?.count ? focusN.ready_count : ready;
+    const breakCount = breakN?.count ? breakN.ready_count : ready;
     summary.textContent =
       `전체 ${state.tracks.length}곡 · 재생 가능 ${ready}곡 · ` +
-      `집중 ${playlistOf("focus")?.ready_count ?? 0}곡 · 휴식 ${playlistOf("break")?.ready_count ?? 0}곡`;
+      `집중 ${focusCount}곡 · 휴식 ${breakCount}곡`;
   }
 
   if (!rows.length) {

@@ -114,39 +114,18 @@ def _write_user_tracks(items: list[dict]) -> None:
 
 
 def ensure_file() -> None:
-    """부트스트랩 시드 + 기본 재생목록 보충.
+    """부트스트랩 시드 — tracks.json 과 기본 재생목록(집중/휴식) 이 존재하게만 한다.
 
-    카탈로그의 프리셋 배정(트랙의 playlists 필드)으로 집중/휴식을 채운다. 첫 실행에서
-    사용자가 아무 설정도 하지 않아도 음악이 나오게 하기 위함이다.
-
-    ★ 파일이 이미 있어도 **비어 있는 기본 재생목록은 채운다.** 카탈로그는 나중에
-    갱신될 수 있는데(생성기를 다시 돌리거나 새 버전을 받거나), 그때 목록이 비어 있으면
-    음원을 받아도 재생될 곡이 하나도 없다. 사용자가 직접 비운 목록을 되살리지 않도록
-    **비어 있을 때만** 보충한다.
+    ★ 집중/휴식 재생목록에 트랙을 미리 채워 넣지 않는다. 아무것도 체크하지 않은
+    상태(track_ids 가 비어 있음)를 "재생할 게 없다" 가 아니라 "전부 재생 가능" 으로
+    해석하는 건 재생 엔진의 몫이다 (ui/modules/audio.js#rebuildOrder). 여기서 카탈로그
+    트랙으로 미리 채우면, 카탈로그가 나중에 더 커졌을 때 그 차이만큼 다시 채워 넣어야
+    하는 문제가 반복된다 — 아예 채우지 않으면 그럴 일이 없다.
     """
     if not _tracks_path().exists():
         _write_user_tracks([])
-
-    with storage._LOCK:
-        exists = _playlists_path().exists()
-        doc = copy.deepcopy(_read_playlists()) if exists else _default_playlists()
-        by_id = {p["id"]: p for p in doc["playlists"]}
-        changed = not exists
-
-        preset: dict[str, list[str]] = {}
-        for t in catalog.tracks():
-            for pid in t.get("playlists", []):
-                preset.setdefault(pid, []).append(t["id"])
-
-        for pid, ids in preset.items():
-            target = by_id.get(pid)
-            if target is None or target.get("track_ids"):
-                continue          # 사용자가 구성해 둔 목록은 건드리지 않는다
-            target["track_ids"] = ids
-            changed = True
-
-        if changed:
-            _write_playlists(doc)
+    if not _playlists_path().exists():
+        _write_playlists(_default_playlists())
 
 
 # ── 트랙 조회 ───────────────────────────────────────────────────────────────

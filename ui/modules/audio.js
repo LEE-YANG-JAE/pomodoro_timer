@@ -239,8 +239,12 @@ export function rebuildOrder(key, { keepIfSame = false } = {}) {
   const pid = playlistIdFor(key);
   const pl = state.playlists.find((p) => p.id === pid);
   const readyIds = new Set(state.tracks.filter((t) => t.ready).map((t) => t.id));
-  let ids = (pl?.track_ids ?? []).filter(
-    (id) => readyIds.has(id) && !state.audio.failed.has(id));
+  // ★ 아무것도 체크 안 한 게 기본값이다 — 그게 "아무것도 재생하지 마라" 가 되면 안 된다.
+  //   집중/휴식 목록이 비어 있으면(=아직 아무도 고르지 않았으면) 재생 가능한 전체 곡을
+  //   쓴다. 체크박스는 사용자가 실제로 뭔가를 골랐을 때만 그걸로 좁히는 필터다.
+  const chosen = pl?.track_ids ?? [];
+  const pool = chosen.length ? chosen : Array.from(readyIds);
+  let ids = pool.filter((id) => readyIds.has(id) && !state.audio.failed.has(id));
 
   const shuffle =
     key === "focus" ? state.settings.audio.shuffle_focus : state.settings.audio.shuffle_break;
