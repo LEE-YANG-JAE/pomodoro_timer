@@ -236,20 +236,33 @@ export function toggleTimer() {
 }
 
 /**
- * 진행 중인 구간을 연장한다.
+ * 진행 중인 구간을 연장하거나(양수) 줄인다(음수).
  *
  * ★ 이탈 원인 1위가 "알림이 몰입을 끊는 것" 이다. 타이머가 데드라인 기반이라
  *   endsAt 을 미루는 것만으로 끝난다. planned_seconds 도 함께 늘려 기록이
  *   "25분 계획했는데 30분 했다" 가 아니라 "30분 계획하고 30분 했다" 가 되게 한다.
+ * ★ FLOOR_MS 밑으로는 줄이지 않는다 — 남은 시간을 음수로 만들면 절전 복구 로직이
+ *   "오래 잠들었다 깨어남" 으로 오판해 엉뚱하게 복구 모달을 띄운다.
+ * @returns {number} 실제로 적용된 초(요청한 값이 바닥에 걸려 줄었을 수 있다)
  */
+const EXTEND_FLOOR_MS = 10_000;
+
 export function extendPhase(seconds = 300) {
   const T = state.timer;
+  const wantedMs = seconds * 1000;
+  let appliedMs;
   if (T.status === "running" && T.endsAt != null) {
-    T.endsAt += seconds * 1000;
+    const now = Date.now();
+    const nextEndsAt = Math.max(now + EXTEND_FLOOR_MS, T.endsAt + wantedMs);
+    appliedMs = nextEndsAt - T.endsAt;
+    T.endsAt = nextEndsAt;
   } else {
-    T.remainingMs += seconds * 1000;
+    const nextRemaining = Math.max(EXTEND_FLOOR_MS, T.remainingMs + wantedMs);
+    appliedMs = nextRemaining - T.remainingMs;
+    T.remainingMs = nextRemaining;
   }
-  T.plannedMs += seconds * 1000;
+  T.plannedMs = Math.max(EXTEND_FLOOR_MS, T.plannedMs + appliedMs);
+  seconds = Math.round(appliedMs / 1000);
   T.warnedSoon = false;          // 연장했으면 예고를 다시 할 수 있어야 한다
   saveTimer();
   emit("timer:tick", tickDetail());

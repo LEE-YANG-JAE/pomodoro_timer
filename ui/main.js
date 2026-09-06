@@ -139,8 +139,11 @@ function renderFirstRun() {
 }
 
 function renderExtendButton() {
-  const btn = $("#btn-extend");
-  if (btn) btn.hidden = state.timer.status !== "running";
+  const running = state.timer.status === "running";
+  const minus = $("#btn-extend-minus");
+  const plus = $("#btn-extend-plus");
+  if (minus) minus.hidden = !running;
+  if (plus) plus.hidden = !running;
 }
 
 /** 재생/일시정지·순서 버튼의 모양을 현재 상태에 맞춘다. */
@@ -234,8 +237,12 @@ function wireEvents() {
   on("timer:gap", (gap) => openRecoveryModal(gap));
 
   on("timer:status", () => { renderExtendButton(); });
-  on("timer:extended", ({ seconds }) =>
-    showToast(`${Math.round(seconds / 60)}분 연장했습니다.`, { ms: 1600 }));
+  on("timer:extended", ({ seconds }) => {
+    if (!seconds) { showToast("더 줄일 수 없습니다.", { kind: "warn", ms: 1600 }); return; }
+    const abs = Math.abs(seconds);
+    const label = abs >= 60 ? `${Math.round(abs / 60)}분` : `${abs}초`;
+    showToast(`${label} ${seconds < 0 ? "줄였습니다" : "연장했습니다"}.`, { ms: 1600 });
+  });
 
   // ★ 종료 30초 전 조용한 예고 — 문장 중간에 잘리지 않게. 토스트가 아니라 링 색만 바꾼다.
   on("timer:ending-soon", () => {
@@ -359,7 +366,8 @@ function wireControls() {
     $("#first-run").hidden = true;
   });
 
-  $("#btn-extend")?.addEventListener("click", () => extendPhase(300));
+  $("#btn-extend-plus")?.addEventListener("click", () => extendPhase(300));
+  $("#btn-extend-minus")?.addEventListener("click", () => extendPhase(-300));
 
   $("#btn-skip")?.addEventListener("click", () => skipPhase());
   $("#btn-reset")?.addEventListener("click", () => resetPhase());

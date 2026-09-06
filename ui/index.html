@@ -44,15 +44,19 @@
       <p id="active-task" class="active-task" hidden></p>
     </div>
 
-    <p id="cycle-dots" class="cycle-dots" aria-label="세트 진행 상황"></p>
+    <div class="cycle-row">
+      <button id="btn-extend-minus" class="btn btn-ghost btn-small" type="button"
+              aria-label="5분 줄이기" hidden>-5</button>
+      <p id="cycle-dots" class="cycle-dots" aria-label="세트 진행 상황"></p>
+      <button id="btn-extend-plus" class="btn btn-ghost btn-small" type="button"
+              aria-label="5분 연장 (E)" hidden>+5</button>
+    </div>
 
     <div class="controls">
       <button id="btn-reset" class="btn btn-ghost" type="button" aria-label="현재 구간 처음으로 (R)">초기화</button>
       <button id="btn-primary" class="btn btn-primary btn-lg" type="button" aria-label="시작">시작</button>
       <button id="btn-skip" class="btn btn-ghost" type="button" aria-label="건너뛰기 (S)">건너뛰기</button>
     </div>
-    <button id="btn-extend" class="btn btn-ghost btn-small" type="button"
-            aria-label="5분 연장 (E)" hidden>+5분 더</button>
 
     <!-- 첫 실행 안내 — 음원이 없을 때만. 마법사가 아니라 인라인 한 줄. -->
     <p id="first-run" class="first-run muted" hidden>

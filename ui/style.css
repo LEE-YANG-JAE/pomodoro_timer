@@ -112,6 +112,7 @@ body[data-phase="break"] .ring-progress { stroke: var(--break); }
 }
 .countdown:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
+.cycle-row { display: flex; align-items: center; justify-content: center; gap: .7rem; }
 .cycle-dots { display: flex; gap: .45rem; margin: 0; }
 .dot {
   width: 9px; height: 9px; border-radius: 50%;
