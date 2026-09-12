@@ -138,19 +138,6 @@ SOURCES = [
         "max_bytes": 12_000_000,
         "reject": r"Singing Sergeants|\(vocal\)|Chorus|Chorale|Choir",
     },
-    {
-        "kind": "commons",
-        "category": "Audio files of music by the United States Navy Band",
-        "source_id": "commons:usn-band",
-        "prefix": "usn",
-        "album_ko": "미 해군 군악대 연주 모음",
-        "performer_ko": "United States Navy Band",
-        "composer_ko": None,
-        "playlist": "break",
-        "tier": "extra",
-        "limit": 16,
-        "reject": r"Sea Chanters|\(vocal\)|Chorus|Chorale|Choir",
-    },
 ]
 
 
