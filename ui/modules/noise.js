@@ -15,16 +15,27 @@
 const BUFFER_SECONDS = 8;
 const XFADE_SECONDS = 0.05;   // 루프 이음매를 없애기 위한 등파워 크로스페이드
 
+// ★ 종류 간 체감 구분이 흐릿하다는 피드백으로 다시 설계했다. 6 종이 전부 브라운/핑크/
+//   화이트 세 원시 버퍼(`base`) 중 하나를 공유하므로(캐시 키가 base 단위), 필터 컷오프만
+//   살짝 다르면 "다른 소리"가 아니라 "같은 소리를 조금 다르게 자른 것"으로 들린다.
+//   그래서 종류마다 ①스펙트럼을 뚜렷이 벌리고 ②고유한 움직임(LFO 패턴)을 준다 —
+//   사람 귀는 정적인 스펙트럼 차이보다 시간에 따른 변화 패턴으로 소리를 더 잘 구분한다.
+// ★ `makeup` — 필터를 많이 거칠수록(대역폭이 좁을수록) 같은 피크에서도 실제 체감 음량
+//   (RMS)이 낮아진다. 전부 피크 0.7 로만 정규화하면 필터가 강한 종류(빗소리·선풍기)가
+//   "그냥 더 작은 브라운 노이즈"처럼 들려 차이가 더 안 느껴진다. `renderNoiseOffline()` 로
+//   6종 전부의 RMS 를 재서 공통 목표치(≈0.16, 6종 자연 평균과 가까워 보정폭이 가장
+//   작다) 에 맞춘 보정값이다 — 필터 상수를 바꾸면 다시 재야 한다.
 export const NOISE_TYPES = {
   brown: {
     id: "brown",
     name_ko: "브라운 노이즈",
-    desc_ko: "저역이 강조된 부드러운 소음. 오래 들어도 덜 피로합니다.",
+    desc_ko: "깊고 둔중한 저음 소음. 오래 들어도 덜 피로합니다.",
     base: "brown",
+    makeup: 1.0,
     build: (ctx) => {
       const lp = ctx.createBiquadFilter();
       lp.type = "lowpass";
-      lp.frequency.value = 1600;
+      lp.frequency.value = 350;   // 확실히 어둡게 — 예전 1600Hz는 브라운 고유 롤오프에 묻혀 체감이 안 됐다
       return { chain: [lp] };
     },
   },
@@ -33,31 +44,47 @@ export const NOISE_TYPES = {
     name_ko: "핑크 노이즈",
     desc_ko: "자연에 가까운 균형 잡힌 소음. 말소리를 고르게 덮어 줍니다.",
     base: "pink",
+    makeup: 1.0,
     build: () => ({ chain: [] }),
   },
   white: {
     id: "white",
     name_ko: "백색 소음",
-    desc_ko: "모든 대역이 균일한 고전적인 백색 소음. 마스킹 효과가 가장 강합니다.",
+    desc_ko: "모든 대역이 균일한 밝고 또렷한 소음. 마스킹 효과가 가장 강합니다.",
     base: "white",
-    build: () => ({ chain: [] }),
+    makeup: 0.37,
+    build: (ctx) => {
+      const hs = ctx.createBiquadFilter();
+      hs.type = "highshelf";
+      hs.frequency.value = 3500;
+      hs.gain.value = 4;          // 핑크와 나란히 들었을 때 "밝다"는 게 분명히 느껴지게
+      return { chain: [hs] };
+    },
   },
   rain: {
     id: "rain",
     name_ko: "빗소리",
-    desc_ko: "창밖에 비가 내리는 듯한 소리.",
+    desc_ko: "후두둑 떨어지는 빗방울 소리. 굵어졌다 가늘어지기를 반복합니다.",
     base: "white",
+    makeup: 1.64,
     build: (ctx) => {
       const bp = ctx.createBiquadFilter();
       bp.type = "bandpass";
-      bp.frequency.value = 1400;
-      bp.Q.value = 0.35;
+      bp.frequency.value = 2200;
+      bp.Q.value = 0.6;
       const shelf = ctx.createBiquadFilter();
       shelf.type = "lowshelf";
       shelf.frequency.value = 220;
-      shelf.gain.value = 8;          // 낮은 빗물 웅웅거림
-      // 빗발이 굵어졌다 가늘어지는 아주 느린 변화
-      return { chain: [bp, shelf], lfo: { rate: 0.05, depth: 0.12 } };
+      shelf.gain.value = 6;          // 낮은 빗물 웅웅거림
+      return {
+        chain: [bp, shelf],
+        // 느린 LFO = 소나기↔이슬비 강약, 빠른 LFO = 빗방울이 후두둑 떨어지는 잔떨림.
+        // 두 개를 겹쳐야 "규칙적인 필터음"이 아니라 "빗소리"로 들린다.
+        lfos: [
+          { rate: 0.045, depth: 0.22 },
+          { rate: 3.4, depth: 0.20 },
+        ],
+      };
     },
   },
   waves: {
@@ -65,29 +92,36 @@ export const NOISE_TYPES = {
     name_ko: "파도 소리",
     desc_ko: "천천히 밀려왔다 빠지는 파도. 호흡을 늦추는 데 좋습니다.",
     base: "brown",
+    makeup: 1.19,
     build: (ctx) => {
       const lp = ctx.createBiquadFilter();
       lp.type = "lowpass";
-      lp.frequency.value = 700;
+      lp.frequency.value = 900;
       // 파도의 핵심은 느린 진폭 변화다 — 12초 남짓 주기가 사람 호흡과 비슷하다
-      return { chain: [lp], lfo: { rate: 0.085, depth: 0.55, filter: lp, filterDepth: 500 } };
+      return { chain: [lp], lfos: [{ rate: 0.085, depth: 0.55, filter: lp, filterDepth: 500 }] };
     },
   },
   fan: {
     id: "fan",
     name_ko: "선풍기 소리",
-    desc_ko: "일정한 팬 소음. 변화가 거의 없어 배경으로 사라집니다.",
+    desc_ko: "또렷한 모터 웅웅거림이 있는 일정한 팬 소음. 변화가 거의 없어 배경으로 사라집니다.",
     base: "brown",
+    makeup: 0.77,
     build: (ctx) => {
       const lp = ctx.createBiquadFilter();
       lp.type = "lowpass";
-      lp.frequency.value = 420;
+      lp.frequency.value = 380;
       const hum = ctx.createBiquadFilter();
       hum.type = "peaking";
-      hum.frequency.value = 118;     // 모터 웅웅거림
-      hum.Q.value = 6;
-      hum.gain.value = 7;
-      return { chain: [lp, hum] };
+      hum.frequency.value = 118;     // 모터 웅웅거림 기본 음
+      hum.Q.value = 8;
+      hum.gain.value = 11;
+      const hum2 = ctx.createBiquadFilter();
+      hum2.type = "peaking";
+      hum2.frequency.value = 236;    // 2차 배음 — "기계가 돈다"는 느낌은 배음이 만든다
+      hum2.Q.value = 8;
+      hum2.gain.value = 6;
+      return { chain: [lp, hum, hum2] };
     },
   },
 };
@@ -204,7 +238,9 @@ export function createNoiseSource(ctx, typeId) {
   src.buffer = makeNoiseBuffer(ctx, spec.base);
   src.loop = true;
 
-  const { chain = [], lfo = null } = spec.build(ctx) ?? {};
+  const { chain = [], lfos = [] } = spec.build(ctx) ?? {};
+  const makeup = ctx.createGain();
+  makeup.gain.value = spec.makeup ?? 1;
   const out = ctx.createGain();
   out.gain.value = 1;
 
@@ -213,28 +249,36 @@ export function createNoiseSource(ctx, typeId) {
     node.connect(f);
     node = f;
   }
-  node.connect(out);
+  node.connect(makeup);
+  makeup.connect(out);
 
-  // 느린 흔들림 (빗발·파도) — 없으면 완전히 정적인 소음이 된다
-  let lfoOsc = null;
-  let lfoGain = null;
-  let lfoFilterGain = null;
-  if (lfo) {
-    lfoOsc = ctx.createOscillator();
-    lfoOsc.type = "sine";
-    lfoOsc.frequency.value = lfo.rate;
+  // 종류마다 고유한 움직임(빗발 강약, 파도 진폭, 후두둑 잔떨림) — 없으면 전부 똑같이
+  // 정적인 소음으로 들린다. 여러 LFO 를 겹칠 수 있어 빗소리처럼 느린 강약 + 빠른
+  // 잔떨림을 함께 줄 수 있다. 한 LFO 가 진폭(depth)과 필터 컷오프(filterDepth)를
+  // 동시에 흔들 수도 있다 (파도 — 커지는 소리와 밝아지는 소리가 같이 온다).
+  const ampDepthSum = lfos.reduce((sum, l) => sum + (l.depth ?? 0), 0);
+  out.gain.value = Math.max(0, 1 - ampDepthSum);   // LFO 들이 더해지므로 기준값을 낮춘다
+  const lfoOscs = [];
+  const lfoGains = [];
+  for (const lfo of lfos) {
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = lfo.rate;
+    lfoOscs.push(osc);
 
-    lfoGain = ctx.createGain();
-    lfoGain.gain.value = lfo.depth;
-    lfoOsc.connect(lfoGain);
-    lfoGain.connect(out.gain);
-    out.gain.value = 1 - lfo.depth;      // LFO 가 더해지므로 기준값을 낮춘다
-
+    if (lfo.depth) {
+      const ampGain = ctx.createGain();
+      ampGain.gain.value = lfo.depth;
+      osc.connect(ampGain);
+      ampGain.connect(out.gain);
+      lfoGains.push(ampGain);
+    }
     if (lfo.filter && lfo.filterDepth) {
-      lfoFilterGain = ctx.createGain();
-      lfoFilterGain.gain.value = lfo.filterDepth;
-      lfoOsc.connect(lfoFilterGain);
-      lfoFilterGain.connect(lfo.filter.frequency);
+      const filterGain = ctx.createGain();
+      filterGain.gain.value = lfo.filterDepth;
+      osc.connect(filterGain);
+      filterGain.connect(lfo.filter.frequency);
+      lfoGains.push(filterGain);
     }
   }
 
@@ -242,23 +286,25 @@ export function createNoiseSource(ctx, typeId) {
     output: out,
     start(when = 0) {
       src.start(when);
-      lfoOsc?.start(when);
+      for (const osc of lfoOscs) osc.start(when);
     },
     stop(when = 0) {
       try {
         src.stop(when);
       } catch { /* 이미 멈춤 */ }
-      try {
-        lfoOsc?.stop(when);
-      } catch { /* 무시 */ }
+      for (const osc of lfoOscs) {
+        try {
+          osc.stop(when);
+        } catch { /* 무시 */ }
+      }
       // 페이드아웃이 끝난 뒤 연결을 끊어 그래프가 쌓이지 않게 한다
       const delayMs = Math.max(0, (when - ctx.currentTime) * 1000) + 200;
       setTimeout(() => {
         try {
           out.disconnect();
+          makeup.disconnect();
           for (const f of chain) f.disconnect();
-          lfoGain?.disconnect();
-          lfoFilterGain?.disconnect();
+          for (const g of lfoGains) g.disconnect();
         } catch { /* 무시 */ }
       }, delayMs);
     },
